@@ -1,10 +1,11 @@
 package isi.dan.ms_productos.modelo;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.List;
+
 
 @Entity
 @Table(name = "MS_PRD_PRODUCTO")
@@ -21,8 +22,11 @@ public class Producto {
     @Column(name ="STOCK_MINIMO")
     private int stockMinimo;
     private BigDecimal precio;
+    @DecimalMin(value = "0.0")
+    private BigDecimal descuentoPromocional = BigDecimal.ZERO; 
     
-    @Enumerated(EnumType.STRING)
-    private Categoria categoria;
+    @ManyToOne(fetch = FetchType.LAZY) 
+    @JoinColumn(name = "CATEGORIA_ID", nullable = false) // Define la clave foránea
+    private Categoria categoria;    //Habría que revisar si no es necesario cambiar un poco esto para que ponga explicitamente el nombre de la categoria
 
 }

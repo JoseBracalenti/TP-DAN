@@ -23,6 +23,14 @@ public class RestControllerException {
         return new ResponseEntity<ErrorInfo>(new ErrorInfo(Instant.now(),ex.getMessage(),detalle,HttpStatus.NOT_FOUND.value()), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(CategoriaNotFoundException.class)
+    public ResponseEntity<ErrorInfo> handleProductNotFoundException(CategoriaNotFoundException ex) {
+        logger.error("ERROR Buscando Categoria", ex);
+        String detalle = ex.getCause() == null ? "Categoria no encontrada": ex.getCause().getMessage();
+
+        return new ResponseEntity<ErrorInfo>(new ErrorInfo(Instant.now(),ex.getMessage(),detalle,HttpStatus.NOT_FOUND.value()), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorInfo> handleOtherExceptions(Exception ex) {
         logger.error("ERROR MS CLIENTES", ex);

@@ -12,16 +12,20 @@ import org.springframework.web.client.RestTemplate;
 import isi.dan.ms_productos.aop.LogExecutionTime;
 import isi.dan.ms_productos.exception.ProductoNotFoundException;
 import isi.dan.ms_productos.modelo.Producto;
+import isi.dan.ms_productos.dto.*;
 import isi.dan.ms_productos.servicio.EchoClientFeign;
 import isi.dan.ms_productos.servicio.ProductoService;
 
 import java.util.List;
+import isi.dan.ms_productos.utils.*;
+
 
 @RestController
 @RequestMapping("/api/productos")
 public class ProductoController {
     @Autowired
     private ProductoService productoService;
+    private Mapper mapper;
 
     Logger log = LoggerFactory.getLogger(ProductoController.class);
 
@@ -31,7 +35,15 @@ public class ProductoController {
 
     @PostMapping
     @LogExecutionTime
-    public ResponseEntity<Producto> createProducto(@RequestBody @Validated Producto producto) {
+    public ResponseEntity<ProductoDTO> createProducto(@RequestBody @Validated ProductoDTO productoDTO) {
+
+        return ResponseEntity.ok(mapper.productoToDTO(productoService.newProducto(productoDTO)));
+    }
+
+    @PostMapping
+    @LogExecutionTime
+    public ResponseEntity<Producto> updateProducto(@RequestBody @Validated Producto producto) {
+       // revisar que el producto exista por id, si existe -> save
         Producto savedProducto = productoService.saveProducto(producto);
         return ResponseEntity.ok(savedProducto);
     }
@@ -72,6 +84,7 @@ public class ProductoController {
         productoService.deleteProducto(id);
         return ResponseEntity.noContent().build();
     }
+
 
 }
 

@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import isi.dan.ms_productos.conf.RabbitMQConfig;
+import isi.dan.ms_productos.dao.CategoriaRepository;
 import isi.dan.ms_productos.dao.ProductoRepository;
-import isi.dan.ms_productos.dto.StockUpdateDTO;
+import isi.dan.ms_productos.dto.*;
+import isi.dan.ms_productos.dao.ProductoRepository;
 import isi.dan.ms_productos.exception.ProductoNotFoundException;
 import isi.dan.ms_productos.modelo.Producto;
 
@@ -19,6 +21,9 @@ import java.util.List;
 public class ProductoService {
     @Autowired
     private ProductoRepository productoRepository;
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
     Logger log = LoggerFactory.getLogger(ProductoService.class);
 
     @RabbitListener(queues = RabbitMQConfig.STOCK_UPDATE_QUEUE)
@@ -30,6 +35,18 @@ public class ProductoService {
     }
 
 
+    public Producto newProducto(ProductoDTO productoDTO){
+    // Crear el objeto Producto a través de un DTO
+    Producto producto = new Producto();
+    producto.setNombre(productoDTO.getNombre());
+    producto.setDescripcion(productoDTO.getDescripcion());
+    producto.setStockActual(0); // Stock inicial siempre es 0
+    producto.setStockMinimo(productoDTO.getStockMinimo());
+    producto.setPrecio(productoDTO.getPrecioInicial());
+    producto.setCategoria(categoriaRepository.findByName(productoDTO.getNombreCategoria()));
+    // Guardar el producto
+    return productoRepository.saveProducto(producto);
+    }
 
     public Producto saveProducto(Producto producto) {
         return productoRepository.save(producto);
