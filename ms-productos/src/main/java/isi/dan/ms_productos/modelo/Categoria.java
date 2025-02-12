@@ -1,6 +1,7 @@
 package isi.dan.ms_productos.modelo;
 import jakarta.persistence.*;
 
+
 import lombok.Data;
 
 @Entity

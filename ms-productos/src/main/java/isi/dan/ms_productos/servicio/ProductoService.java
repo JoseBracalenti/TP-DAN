@@ -4,64 +4,79 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import isi.dan.ms_productos.conf.RabbitMQConfig;
-import isi.dan.ms_productos.dao.CategoriaRepository;
 import isi.dan.ms_productos.dao.ProductoRepository;
 import isi.dan.ms_productos.dto.*;
-import isi.dan.ms_productos.dao.ProductoRepository;
+import isi.dan.ms_productos.exception.CategoriaNotFoundException;
 import isi.dan.ms_productos.exception.ProductoNotFoundException;
 import isi.dan.ms_productos.modelo.Producto;
 
+import java.math.BigDecimal;
 import java.util.List;
+
+import isi.dan.ms_productos.utils.Mapper;
 
 @Service
 public class ProductoService {
     @Autowired
     private ProductoRepository productoRepository;
     @Autowired
-    private CategoriaRepository categoriaRepository;
+    private Mapper mapper;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     Logger log = LoggerFactory.getLogger(ProductoService.class);
 
     @RabbitListener(queues = RabbitMQConfig.STOCK_UPDATE_QUEUE)
-    public void handleStockUpdate(Message msg) {
-        log.info("Recibido {}", msg);
-        // buscar el producto
-        // actualizar el stock
-        // verificar el punto de pedido y generar un pedido
+    public void handleStockUpdate(StockUpdateDTO stockUpdateDTO) throws ProductoNotFoundException {
+        log.info("Recibido mensaje para actualizar stock: {}", stockUpdateDTO);
+        updateProductoStock(stockUpdateDTO.getIdProducto(), stockUpdateDTO);
     }
 
 
-    public Producto newProducto(ProductoDTO productoDTO){
-    // Crear el objeto Producto a través de un DTO
-    Producto producto = new Producto();
-    producto.setNombre(productoDTO.getNombre());
-    producto.setDescripcion(productoDTO.getDescripcion());
-    producto.setStockActual(0); // Stock inicial siempre es 0
-    producto.setStockMinimo(productoDTO.getStockMinimo());
-    producto.setPrecio(productoDTO.getPrecioInicial());
-    producto.setCategoria(categoriaRepository.findByName(productoDTO.getNombreCategoria()));
-    // Guardar el producto
-    return productoRepository.saveProducto(producto);
+    public ProductoDTO newProducto(ProductoDTO productoDTO) throws CategoriaNotFoundException{
+    return mapper.productoToDTO(productoRepository.save(mapper.dtoToProducto(productoDTO)));
     }
 
-    public Producto saveProducto(Producto producto) {
-        return productoRepository.save(producto);
+    public ProductoDTO saveProducto(ProductoDTO productoDTO) throws CategoriaNotFoundException{
+        return mapper.productoToDTO(productoRepository.save(mapper.dtoToProducto(productoDTO)));
     }
 
-    public List<Producto> getAllProductos() {
-        return productoRepository.findAll();
+    public List<ProductoDTO> getAllProductos() {
+        return mapper.listaPToDTO(productoRepository.findAll());
     }
 
-    public Producto getProductoById(Long id) throws ProductoNotFoundException{
-        return productoRepository.findById(id).orElseThrow(() -> new ProductoNotFoundException(id));
+    public ProductoDTO getProductoById(Long id) throws ProductoNotFoundException{
+        return mapper.productoToDTO(productoRepository.findById(id).orElseThrow(() -> new ProductoNotFoundException(id)));
+}
+        public void deleteProducto(Long id) throws ProductoNotFoundException{
+        Producto producto = productoRepository.findById(id).orElseThrow(() -> new ProductoNotFoundException(id));
+        productoRepository.deleteById(producto.getId());
     }
 
-    public void deleteProducto(Long id) {
-        productoRepository.deleteById(id);
+    public ProductoDTO updateDescuento(Long id, BigDecimal desc ) throws ProductoNotFoundException {
+        Producto producto = productoRepository.findById(id).orElseThrow(() -> new ProductoNotFoundException(id));
+        producto.setDescuentoPromocional(desc);
+        productoRepository.save(producto);
+        return mapper.productoToDTO(producto);
     }
+
+
+    public ProductoDTO updateProductoStock(Long id, StockUpdateDTO stockUpdateDTO) throws ProductoNotFoundException{
+        Producto producto = productoRepository.findById(id).orElseThrow(() -> new ProductoNotFoundException(id));
+        producto.setStockActual(producto.getStockActual()+ stockUpdateDTO.getCantidad());
+        producto.setPrecio(stockUpdateDTO.getPrecio());
+        productoRepository.save(producto);
+// ahora código para mensaje
+    rabbitTemplate.convertAndSend(RabbitMQConfig.STOCK_UPDATE_QUEUE, stockUpdateDTO);
+    log.info("Mensaje enviado a RabbitMQ: {}", stockUpdateDTO);
+        return mapper.productoToDTO(producto);
+    }
+
+
 }
 

@@ -2,7 +2,7 @@ package isi.dan.ms_productos.exception;
 
 import java.time.Instant;
 
-import org.bouncycastle.jcajce.provider.asymmetric.dsa.DSASigner.detDSA;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,12 +24,12 @@ public class RestControllerException {
     }
 
     @ExceptionHandler(CategoriaNotFoundException.class)
-    public ResponseEntity<ErrorInfo> handleProductNotFoundException(CategoriaNotFoundException ex) {
-        logger.error("ERROR Buscando Categoria", ex);
+    public ResponseEntity<ErrorInfo> handleCategoriaNotFoundException(CategoriaNotFoundException ex) {
+        logger.error("ERROR Buscando Cliente", ex);
         String detalle = ex.getCause() == null ? "Categoria no encontrada": ex.getCause().getMessage();
-
         return new ResponseEntity<ErrorInfo>(new ErrorInfo(Instant.now(),ex.getMessage(),detalle,HttpStatus.NOT_FOUND.value()), HttpStatus.NOT_FOUND);
     }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorInfo> handleOtherExceptions(Exception ex) {
@@ -37,4 +37,7 @@ public class RestControllerException {
         String detalle = ex.getCause() == null ? "Error en producto": ex.getCause().getMessage();
         return new ResponseEntity<ErrorInfo>(new ErrorInfo(Instant.now(),ex.getMessage(),detalle ,HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+
+
 }

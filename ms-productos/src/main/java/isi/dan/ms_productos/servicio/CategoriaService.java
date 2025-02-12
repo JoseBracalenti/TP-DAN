@@ -11,15 +11,17 @@ import isi.dan.ms_productos.conf.RabbitMQConfig;
 import isi.dan.ms_productos.dao.CategoriaRepository;
 import isi.dan.ms_productos.dto.CategoriaDTO;
 import isi.dan.ms_productos.exception.CategoriaNotFoundException;
-import isi.dan.ms_productos.modelo.Categoria;
 
 import java.util.List;
+import isi.dan.ms_productos.utils.Mapper;
 
 @Service
 public class CategoriaService {
     @Autowired
     private CategoriaRepository categoriaRepository;
     Logger log = LoggerFactory.getLogger(CategoriaService.class);
+    @Autowired
+    private Mapper mapper;
 
     @RabbitListener(queues = RabbitMQConfig.STOCK_UPDATE_QUEUE)
     public void handleStockUpdate(Message msg) {
@@ -28,25 +30,24 @@ public class CategoriaService {
         // actualizar el stock
         // verificar el punto de pedido y generar un pedido
     }
-
-
-    public Categoria newCategoria(CategoriaDTO categoriaDTO) {
-        Categoria categoria = new Categoria();
-        categoria.setNombre(categoriaDTO.getNombre());
-        //categoria.setId(categoriaDTO.)
-        return categoriaRepository.save(categoria);
+    //no agrego una excep porque ya lo hace el .save
+    public CategoriaDTO newCategoria(CategoriaDTO categoriaDTO){
+        return mapper.categoriaToDTO(categoriaRepository.save(mapper.dtoToCategoria(categoriaDTO)));
+    }
+     //no agrego una excep porque ya lo hace el .save
+    public CategoriaDTO updateCategoria(CategoriaDTO categoriaDTO) {
+        return mapper.categoriaToDTO(categoriaRepository.save(mapper.dtoToCategoria(categoriaDTO)));
     }
 
-    public Categoria saveCategoria(Categoria categoria) {
-        return categoriaRepository.save(categoria);
+    //Entiendo que no es necesario al excepción porque findAll a lo sumo devuelve una lista vacia. 
+    // Si hay un error a la hora de realizar la búsqueda se encarga spring?
+    public List<CategoriaDTO> getAllCategorias() {
+        return mapper.listaToDTO(categoriaRepository.findAll());
     }
 
-    public List<Categoria> getAllCategorias() {
-        return categoriaRepository.findAll();
-    }
-
-    public Categoria getCategoriaByName(String name) throws CategoriaNotFoundException{
-        return categoriaRepository.findByName(name).orElseThrow(() -> new CategoriaNotFoundException(name));
+    
+    public CategoriaDTO getCategoriaByName(String name) throws CategoriaNotFoundException{
+        return mapper.categoriaToDTO(categoriaRepository.findByName(name).orElseThrow(() -> new CategoriaNotFoundException(name)));
     }
  
 

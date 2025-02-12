@@ -11,12 +11,9 @@ import org.springframework.web.client.RestTemplate;
 
 import isi.dan.ms_productos.aop.LogExecutionTime;
 import isi.dan.ms_productos.exception.CategoriaNotFoundException;
-import isi.dan.ms_productos.modelo.Categoria;
 import isi.dan.ms_productos.dto.CategoriaDTO;
 import isi.dan.ms_productos.servicio.EchoClientFeign;
 import isi.dan.ms_productos.servicio.CategoriaService;
-
-import isi.dan.ms_productos.utils.*;
 
 import java.util.List;
 
@@ -27,7 +24,6 @@ public class CategoriaController {
     private CategoriaService categoriaService;
 
     Logger log = LoggerFactory.getLogger(CategoriaController.class);
-    private Mapper mapper;
 
     @Autowired
     EchoClientFeign echoSvc;
@@ -35,9 +31,26 @@ public class CategoriaController {
     @PostMapping
     @LogExecutionTime
     public ResponseEntity<CategoriaDTO> createCategoriaByName(@RequestBody @Validated CategoriaDTO categoriaDTO) {
+        return ResponseEntity.ok(categoriaService.newCategoria(categoriaDTO));
+    }
 
+    @GetMapping
+    @LogExecutionTime
+    public ResponseEntity<List<CategoriaDTO>> getAllCategorias() {
+        return ResponseEntity.ok(categoriaService.getAllCategorias());
+    }
 
-        return ResponseEntity.ok(mapper.categoriaToDTO(categoriaService.newCategoria(categoriaDTO)));
+    @GetMapping("/{name}")
+    @LogExecutionTime
+    public ResponseEntity<CategoriaDTO> getCategoriaByName(@PathVariable String name) throws CategoriaNotFoundException {// getcategoria tira la excp
+        return  ResponseEntity.ok(categoriaService.getCategoriaByName(name));
+    }
+       
+    @DeleteMapping("/{name}")
+    @LogExecutionTime
+    public ResponseEntity<Void> deleteCategoria(@PathVariable String name) {
+        categoriaService.deleteCategoria(name);
+        return ResponseEntity.noContent().build();
     }
     @GetMapping("/test")
     @LogExecutionTime
@@ -56,26 +69,6 @@ public class CategoriaController {
         log.info("Log en test 2 {}",resultado);
         return resultado;
     }
-
-    @GetMapping
-    @LogExecutionTime
-    public List<Categoria> getAllCategorias() {
-        return categoriaService.getAllCategorias();
-    }
-
-    @GetMapping("/{name}")
-    @LogExecutionTime
-    public ResponseEntity<Categoria> getCategoriaByName(@PathVariable String name) throws CategoriaNotFoundException {
-        return  ResponseEntity.ok(categoriaService.getCategoriaByName(name));
-    }
-       
-    @DeleteMapping("/{name}")
-    @LogExecutionTime
-    public ResponseEntity<Void> deleteCategoria(@PathVariable String name) {
-        categoriaService.deleteCategoria(name);
-        return ResponseEntity.noContent().build();
-    }
-
 
 }
 
