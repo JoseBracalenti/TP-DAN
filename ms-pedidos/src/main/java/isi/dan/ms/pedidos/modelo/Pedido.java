@@ -18,7 +18,7 @@ public class Pedido {
     private Integer numeroPedido;
     private String usuario;
     private String observaciones;
-
+    private EstadoPedido Estado;
     private Cliente cliente;
     private BigDecimal total;
 
