@@ -15,15 +15,12 @@ public class StockUpdateDTO {
         public Long getId() {
             return idProducto;
         }
-    
         public void setId(Long id) {
             this.idProducto = id;
         }
-    
         public Integer getCantidad() {
             return cantidad;
         }
-    
         public void setCantidad(Integer cant) {
             this.cantidad = cant;
         }

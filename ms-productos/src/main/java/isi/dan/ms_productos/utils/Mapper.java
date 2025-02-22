@@ -3,13 +3,14 @@ package isi.dan.ms_productos.utils;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import isi.dan.ms_productos.dao.CategoriaRepository;
 import isi.dan.ms_productos.modelo.*;
 import isi.dan.ms_productos.dto.*;
 import isi.dan.ms_productos.exception.CategoriaNotFoundException;
 
-
+@Component
 public class Mapper{
 
     @Autowired
@@ -48,7 +49,7 @@ public class Mapper{
         producto.setStockMinimo(productoDTO.getStockMinimo());
         producto.setPrecio(productoDTO.getPrecio());
         producto.setDescuentoPromocional(productoDTO.getDescuentoPromocional());
-        producto.setCategoria((categoriarepository.findByName((productoDTO.getNombreCategoria()))).orElseThrow(() -> new CategoriaNotFoundException(productoDTO.getNombreCategoria())));
+        producto.setCategoria((categoriarepository.findByNombre((productoDTO.getNombreCategoria()))).orElseThrow(() -> new CategoriaNotFoundException(productoDTO.getNombreCategoria())));
         return producto;
     }
 

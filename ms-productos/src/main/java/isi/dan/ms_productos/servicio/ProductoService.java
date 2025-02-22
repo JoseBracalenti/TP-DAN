@@ -2,7 +2,6 @@ package isi.dan.ms_productos.servicio;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,6 @@ public class ProductoService {
         updateProductoStock(stockUpdateDTO.getIdProducto(), stockUpdateDTO);
     }
 
-
     public ProductoDTO newProducto(ProductoDTO productoDTO) throws CategoriaNotFoundException{
     return mapper.productoToDTO(productoRepository.save(mapper.dtoToProducto(productoDTO)));
     }
@@ -52,7 +50,7 @@ public class ProductoService {
 
     public ProductoDTO getProductoById(Long id) throws ProductoNotFoundException{
         return mapper.productoToDTO(productoRepository.findById(id).orElseThrow(() -> new ProductoNotFoundException(id)));
-}
+    }
         public void deleteProducto(Long id) throws ProductoNotFoundException{
         Producto producto = productoRepository.findById(id).orElseThrow(() -> new ProductoNotFoundException(id));
         productoRepository.deleteById(producto.getId());
@@ -65,13 +63,12 @@ public class ProductoService {
         return mapper.productoToDTO(producto);
     }
 
-
     public ProductoDTO updateProductoStock(Long id, StockUpdateDTO stockUpdateDTO) throws ProductoNotFoundException{
         Producto producto = productoRepository.findById(id).orElseThrow(() -> new ProductoNotFoundException(id));
         producto.setStockActual(producto.getStockActual()+ stockUpdateDTO.getCantidad());
         producto.setPrecio(stockUpdateDTO.getPrecio());
         productoRepository.save(producto);
-// ahora código para mensaje
+    // ahora código para mensaje
     rabbitTemplate.convertAndSend(RabbitMQConfig.STOCK_UPDATE_QUEUE, stockUpdateDTO);
     log.info("Mensaje enviado a RabbitMQ: {}", stockUpdateDTO);
         return mapper.productoToDTO(producto);

@@ -15,18 +15,22 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
+    @Column
     private String nombre;
+    @Column
     private String descripcion;
     @Column(name ="STOCK_ACTUAL")
     private int stockActual;
     @Column(name ="STOCK_MINIMO")
     private int stockMinimo;
+    @Column
     private BigDecimal precio;
+    @Column
     @DecimalMin(value = "0.0")
     private BigDecimal descuentoPromocional = BigDecimal.ZERO; 
     
     @ManyToOne(fetch = FetchType.LAZY) 
-    @JoinColumn(name = "CATEGORIA_ID", nullable = false) // Define la clave foránea
-    private Categoria categoria;    //Habría que revisar si no es necesario cambiar un poco esto para que ponga explicitamente el nombre de la categoria
+    @JoinColumn(name = "CATEGORIA_NOMBRE", nullable = false) // Define la clave foránea
+    private Categoria categoria;    
 
 }

@@ -17,8 +17,10 @@ import isi.dan.ms_productos.utils.Mapper;
 
 @Service
 public class CategoriaService {
+
     @Autowired
     private CategoriaRepository categoriaRepository;
+
     Logger log = LoggerFactory.getLogger(CategoriaService.class);
     @Autowired
     private Mapper mapper;
@@ -47,12 +49,12 @@ public class CategoriaService {
 
     
     public CategoriaDTO getCategoriaByName(String name) throws CategoriaNotFoundException{
-        return mapper.categoriaToDTO(categoriaRepository.findByName(name).orElseThrow(() -> new CategoriaNotFoundException(name)));
+        return mapper.categoriaToDTO(categoriaRepository.findByNombre(name).orElseThrow(() -> new CategoriaNotFoundException(name)));
     }
  
 
     public void deleteCategoria(String name) {
-        categoriaRepository.deleteByName(name);
+        categoriaRepository.deleteByNombre(name);
     }
 }
 

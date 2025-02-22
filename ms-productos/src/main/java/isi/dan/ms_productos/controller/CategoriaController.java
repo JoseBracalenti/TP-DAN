@@ -40,18 +40,19 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaService.getAllCategorias());
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/{nombre}")
     @LogExecutionTime
-    public ResponseEntity<CategoriaDTO> getCategoriaByName(@PathVariable String name) throws CategoriaNotFoundException {// getcategoria tira la excp
-        return  ResponseEntity.ok(categoriaService.getCategoriaByName(name));
+    public ResponseEntity<CategoriaDTO> getCategoriaByName(@PathVariable String nombre) throws CategoriaNotFoundException {// getcategoria tira la excp
+        return  ResponseEntity.ok(categoriaService.getCategoriaByName(nombre));
     }
        
-    @DeleteMapping("/{name}")
+    @DeleteMapping("/{nombre}")
     @LogExecutionTime
-    public ResponseEntity<Void> deleteCategoria(@PathVariable String name) {
-        categoriaService.deleteCategoria(name);
+    public ResponseEntity<Void> deleteCategoria(@PathVariable String nombre) {
+        categoriaService.deleteCategoria(nombre);
         return ResponseEntity.noContent().build();
     }
+    
     @GetMapping("/test")
     @LogExecutionTime
     public String getEcho() {

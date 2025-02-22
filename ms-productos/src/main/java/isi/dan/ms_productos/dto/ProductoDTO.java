@@ -2,9 +2,8 @@ package isi.dan.ms_productos.dto;
 
 import java.math.BigDecimal;
 import jakarta.validation.constraints.*;
-import lombok.Data;
 
-@Data
+
 public class ProductoDTO {
 
     @NotNull
