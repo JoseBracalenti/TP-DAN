@@ -9,14 +9,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import isi.dan.msclientes.aop.LogExecutionTime;
+import isi.dan.msclientes.dto.ClienteDTO;
+import isi.dan.msclientes.dto.CreateClienteDTO;
 import isi.dan.msclientes.exception.ClienteNotFoundException;
-import isi.dan.msclientes.model.Cliente;
 import isi.dan.msclientes.servicios.ClienteService;
-import jakarta.servlet.http.HttpServletRequest;
-
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -33,8 +31,8 @@ public class ClienteController {
 
     @GetMapping
     @LogExecutionTime
-    public List<Cliente> getAll() {
-        return clienteService.findAll();
+    public ResponseEntity<List<ClienteDTO>> getAll() {
+        return ResponseEntity.ok(clienteService.findAll());
     }
     
     @GetMapping("/echo")
@@ -46,33 +44,27 @@ public class ClienteController {
 
     @GetMapping("/{id}")
     @LogExecutionTime
-    public ResponseEntity<Cliente> getById(@PathVariable Integer id)  throws ClienteNotFoundException {
-        Optional<Cliente> cliente = clienteService.findById(id);
-        return ResponseEntity.ok(cliente.orElseThrow(()-> new ClienteNotFoundException("Cliente "+id+" no encontrado")));
+    public ResponseEntity<ClienteDTO> getById(@PathVariable Integer id) throws ClienteNotFoundException {
+        ClienteDTO cliente = clienteService.findById(id);
+        return ResponseEntity.ok(cliente);
     }
 
     @PostMapping
     @LogExecutionTime
-    public Cliente create(@RequestBody @Validated Cliente cliente) {
-        return clienteService.save(cliente);
-    }
+    public ResponseEntity<ClienteDTO> create(@RequestBody @Validated CreateClienteDTO cliente) {
+        return ResponseEntity.ok(clienteService.save(cliente));
+    };
 
     @PutMapping("/{id}")
     @LogExecutionTime
-    public ResponseEntity<Cliente> update(@PathVariable final Integer id, @RequestBody Cliente cliente) throws ClienteNotFoundException {
-        if (!clienteService.findById(id).isPresent()) {
-            throw new ClienteNotFoundException("Cliente "+id+" no encontrado");
-        }
+    public ResponseEntity<ClienteDTO> update(@PathVariable final Integer id, @RequestBody @Validated ClienteDTO cliente) throws ClienteNotFoundException {
         cliente.setId(id);
-        return ResponseEntity.ok(clienteService.update(cliente));
+        return ResponseEntity.ok(clienteService.update(id, cliente));
     }
 
     @DeleteMapping("/{id}")
     @LogExecutionTime
     public ResponseEntity<Void> delete(@PathVariable Integer id) throws ClienteNotFoundException {
-        if (!clienteService.findById(id).isPresent()) {
-            throw new ClienteNotFoundException("Cliente "+id+" no encontrado para borrar");
-        }
         clienteService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

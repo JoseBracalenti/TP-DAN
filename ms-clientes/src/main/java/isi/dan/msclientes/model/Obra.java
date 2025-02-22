@@ -10,8 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity
@@ -23,21 +21,27 @@ public class Obra {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
+    @Column(nullable = false)
     private String direccion;
 
     @Column(name = "ES_REMODELACION")
     private Boolean esRemodelacion;
     
+    @Column(nullable = false)
     private float lat;
-    
+
+    @Column(nullable = false)
     private float lng;
+
+    @ManyToOne
+    @JoinColumn(name = "ID_ESTADO", nullable = false)
+    private EstadoDeObra estado;
     
     @ManyToOne
-    @JoinColumn(name = "ID_CLIENTE")
+    @JoinColumn(name = "ID_CLIENTE", nullable = false)
     private Cliente cliente;
     
-    @NotNull(message = "El presupuesto es obligatorio")
-    @Min(value=100, message = "El presupuesto debe ser al menos de 100")
+    @Column(nullable = false)
     private BigDecimal presupuesto;
 
 }
