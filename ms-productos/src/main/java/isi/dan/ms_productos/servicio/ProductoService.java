@@ -40,8 +40,10 @@ public class ProductoService {
     return mapper.productoToDTO(productoRepository.save(mapper.dtoToProducto(productoDTO)));
     }
 
-    public ProductoDTO saveProducto(ProductoDTO productoDTO) throws CategoriaNotFoundException{
-        return mapper.productoToDTO(productoRepository.save(mapper.dtoToProducto(productoDTO)));
+    public UpdateProductoDTO updateProducto (UpdateProductoDTO updateProductoDTO, Long id) throws CategoriaNotFoundException, ProductoNotFoundException{
+        Producto producto = productoRepository.findById(id).orElseThrow(( )-> new ProductoNotFoundException(id));
+
+        return mapper.productoToUpdate(productoRepository.save(mapper.updateToProducto(updateProductoDTO, producto)));
     }
 
     public List<ProductoDTO> getAllProductos() {

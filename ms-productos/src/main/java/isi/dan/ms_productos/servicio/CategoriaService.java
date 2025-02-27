@@ -9,10 +9,13 @@ import org.springframework.stereotype.Service;
 
 import isi.dan.ms_productos.conf.RabbitMQConfig;
 import isi.dan.ms_productos.dao.CategoriaRepository;
-import isi.dan.ms_productos.dto.CategoriaDTO;
+import isi.dan.ms_productos.dto.*;
 import isi.dan.ms_productos.exception.CategoriaNotFoundException;
+import isi.dan.ms_productos.modelo.Categoria;
 
 import java.util.List;
+
+
 import isi.dan.ms_productos.utils.Mapper;
 
 @Service
@@ -32,13 +35,15 @@ public class CategoriaService {
         // actualizar el stock
         // verificar el punto de pedido y generar un pedido
     }
-    //no agrego una excep porque ya lo hace el .save
+   
     public CategoriaDTO newCategoria(CategoriaDTO categoriaDTO){
         return mapper.categoriaToDTO(categoriaRepository.save(mapper.dtoToCategoria(categoriaDTO)));
     }
-     //no agrego una excep porque ya lo hace el .save
-    public CategoriaDTO updateCategoria(CategoriaDTO categoriaDTO) {
-        return mapper.categoriaToDTO(categoriaRepository.save(mapper.dtoToCategoria(categoriaDTO)));
+  
+
+    public UpdateCategoriaDTO updateCategoria(UpdateCategoriaDTO updateCategoriaDTO, String nombre) throws CategoriaNotFoundException {
+        Categoria categoria = categoriaRepository.findByNombre(nombre).orElseThrow(()-> new CategoriaNotFoundException(nombre));
+        return mapper.categoriaToUpdate(categoriaRepository.save(mapper.updateToCategoria(updateCategoriaDTO, categoria)));
     }
 
     //Entiendo que no es necesario al excepción porque findAll a lo sumo devuelve una lista vacia. 

@@ -39,10 +39,10 @@ public class ProductoController {
         return ResponseEntity.ok(productoService.newProducto(productoDTO));
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @LogExecutionTime
-    public ResponseEntity<ProductoDTO> updateProducto(@RequestBody @Validated ProductoDTO productoDTO) throws CategoriaNotFoundException {
-        return ResponseEntity.ok(productoService.saveProducto(productoDTO));
+    public ResponseEntity<UpdateProductoDTO> updateProducto(@RequestBody @Validated UpdateProductoDTO updateProductoDTO, @PathVariable Long id) throws CategoriaNotFoundException, ProductoNotFoundException {
+        return ResponseEntity.ok(productoService.updateProducto(updateProductoDTO,id));
     }
 
 

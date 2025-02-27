@@ -1,11 +1,12 @@
 package isi.dan.ms_productos.utils;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import isi.dan.ms_productos.dao.CategoriaRepository;
+import isi.dan.ms_productos.dao.*;
 import isi.dan.ms_productos.modelo.*;
 import isi.dan.ms_productos.dto.*;
 import isi.dan.ms_productos.exception.CategoriaNotFoundException;
@@ -15,6 +16,7 @@ public class Mapper{
 
     @Autowired
     private CategoriaRepository categoriarepository;
+
 
     public CategoriaDTO categoriaToDTO(Categoria categoria){
         CategoriaDTO categoriaDTo = new CategoriaDTO();
@@ -64,6 +66,55 @@ public class Mapper{
                 .collect(Collectors.toList());
     }
     
+    public UpdateProductoDTO productoToUpdate(Producto producto){
+        UpdateProductoDTO respuestaDTO = new UpdateProductoDTO();      
+        respuestaDTO.setNombre(producto.getNombre());
+        respuestaDTO.setDescripcion(producto.getDescripcion());
+        respuestaDTO.setStockMinimo(producto.getStockMinimo());
+        respuestaDTO.setStockActual(producto.getStockActual());
+        respuestaDTO.setPrecio(producto.getPrecio());
+        respuestaDTO.setDescuentoPromocional(producto.getDescuentoPromocional());
+        respuestaDTO.setNombreCategoria((producto.getCategoria()).getNombre());
+        return respuestaDTO;
+    }
+
+    public Producto updateToProducto(UpdateProductoDTO updateProductoDTO,Producto producto)throws CategoriaNotFoundException{
+
+        if (updateProductoDTO.getNombre() != null) {
+            producto.setNombre(updateProductoDTO.getNombre()) ;
+        }
+        if (updateProductoDTO.getDescripcion() != null){
+            producto.setDescripcion(updateProductoDTO.getDescripcion());
+        }
+        if (updateProductoDTO.getStockMinimo() >= 0) { 
+            producto.setStockMinimo(updateProductoDTO.getStockMinimo());
+        }
+        if (updateProductoDTO.getStockActual() >= 0) { 
+            producto.setStockActual(updateProductoDTO.getStockActual());
+        }
+        if (updateProductoDTO.getPrecio() != null && updateProductoDTO.getPrecio().compareTo(BigDecimal.ZERO) > 0) {
+            producto.setPrecio(updateProductoDTO.getPrecio());
+        }
+        if (updateProductoDTO.getDescuentoPromocional() != null && updateProductoDTO.getDescuentoPromocional().compareTo(BigDecimal.ZERO) >= 0) {
+            producto.setDescuentoPromocional(updateProductoDTO.getDescuentoPromocional());
+        }
+        if (updateProductoDTO.getNombreCategoria() != null) {
+            producto.setCategoria((categoriarepository.findByNombre((updateProductoDTO.getNombreCategoria()))).orElseThrow(() -> new CategoriaNotFoundException(updateProductoDTO.getNombreCategoria())));
+        }
+        return producto;
+    }
+    
+    public Categoria updateToCategoria( UpdateCategoriaDTO updateCategoriaDTO, Categoria categoria){
+        categoria.setNombre(updateCategoriaDTO.getNombre());
+        return categoria;
+    }
+    public UpdateCategoriaDTO categoriaToUpdate(Categoria categoria){
+        UpdateCategoriaDTO updateCategoriaDTO = new UpdateCategoriaDTO();
+        updateCategoriaDTO.setNombre(categoria.getNombre());
+        return updateCategoriaDTO;
+    }
+
 
 
 }
+

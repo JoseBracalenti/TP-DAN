@@ -4,20 +4,35 @@ import java.math.BigDecimal;
 import jakarta.validation.constraints.*;
 
 
-public class ProductoDTO {
+public class UpdateProductoDTO {
 
+   
     private String nombre;
+   
     private String descripcion;
+   
     @Min(value = 0)
     private int stockMinimo;
+    private int stockActual;
+    
     @DecimalMin(value = "0.0", inclusive = false)
     private BigDecimal precio;
+    
+    
     @DecimalMin(value = "0.0")
     private BigDecimal descuentoPromocional = BigDecimal.ZERO; 
+    
     private String nombreCategoria; // Sólo el nombre de la categoria
 
 
     // Getters y Setters
+
+    public int getStockActual(){
+        return stockActual;
+    }
+    public void setStockActual(int stockActual){
+        this.stockActual = stockActual;
+    }
     public String getNombre() {
         return nombre;
     }
@@ -67,7 +82,5 @@ public class ProductoDTO {
     }
 
 }
-
-
 
 

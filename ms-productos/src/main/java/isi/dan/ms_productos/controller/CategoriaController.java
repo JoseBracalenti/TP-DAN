@@ -11,11 +11,15 @@ import org.springframework.web.client.RestTemplate;
 
 import isi.dan.ms_productos.aop.LogExecutionTime;
 import isi.dan.ms_productos.exception.CategoriaNotFoundException;
-import isi.dan.ms_productos.dto.CategoriaDTO;
+import isi.dan.ms_productos.dto.*;
 import isi.dan.ms_productos.servicio.EchoClientFeign;
 import isi.dan.ms_productos.servicio.CategoriaService;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("/api/categorias")
@@ -32,6 +36,12 @@ public class CategoriaController {
     @LogExecutionTime
     public ResponseEntity<CategoriaDTO> createCategoriaByName(@RequestBody @Validated CategoriaDTO categoriaDTO) {
         return ResponseEntity.ok(categoriaService.newCategoria(categoriaDTO));
+    }
+
+    @PutMapping("/{nombre}")
+    @LogExecutionTime
+    public ResponseEntity<UpdateCategoriaDTO> updateCategoria(@RequestBody @Validated UpdateCategoriaDTO updateCategoriaDTO,@PathVariable String nombre) throws CategoriaNotFoundException {
+        return ResponseEntity.ok(categoriaService.updateCategoria(updateCategoriaDTO, nombre));
     }
 
     @GetMapping
