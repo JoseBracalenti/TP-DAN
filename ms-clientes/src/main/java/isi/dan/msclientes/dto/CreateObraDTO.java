@@ -4,16 +4,13 @@ import java.math.BigDecimal;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UpdateObraDTO {
-
-    @Null
-    private Integer id;
+public class CreateObraDTO {
 
     @NotEmpty(message = "La dirección no puede estar vacía")
     @Size(min = 1, max = 100)
@@ -27,9 +24,10 @@ public class UpdateObraDTO {
     @Digits(integer = 9, fraction = 6, message = "La longitud debe tener hasta 9 dígitos enteros y 6 decimales")
     private float lng;
 
-    @Null(message = "Utilice los endpoints especificos para actualizar el estado de una obra.")
-    private String estado;
+    @NotNull
+    private Integer clienteId;
 
     @PositiveOrZero(message = "El presupuesto no puede ser negativo")
     private BigDecimal presupuesto;
+
 }

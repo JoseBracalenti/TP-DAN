@@ -13,6 +13,7 @@ import isi.dan.msclientes.dto.ClienteDTO;
 import isi.dan.msclientes.dto.CreateClienteDTO;
 import isi.dan.msclientes.exception.ClienteNotFoundException;
 import isi.dan.msclientes.servicios.ClienteService;
+
 import java.time.Instant;
 import java.util.List;
 
@@ -25,7 +26,6 @@ public class ClienteController {
     @Value("${dan.clientes.instancia}")
     private String instancia;
 
-
     @Autowired
     private ClienteService clienteService;
 
@@ -34,12 +34,12 @@ public class ClienteController {
     public ResponseEntity<List<ClienteDTO>> getAll() {
         return ResponseEntity.ok(clienteService.findAll());
     }
-    
+
     @GetMapping("/echo")
     @LogExecutionTime
     public String getEcho() {
-        log.debug("Recibiendo un echo ----- {}",instancia);
-        return Instant.now()+" - "+instancia;
+        log.debug("Recibiendo un echo ----- {}", instancia);
+        return Instant.now() + " - " + instancia;
     }
 
     @GetMapping("/{id}")
@@ -57,7 +57,8 @@ public class ClienteController {
 
     @PutMapping("/{id}")
     @LogExecutionTime
-    public ResponseEntity<ClienteDTO> update(@PathVariable final Integer id, @RequestBody @Validated ClienteDTO cliente) throws ClienteNotFoundException {
+    public ResponseEntity<ClienteDTO> update(@PathVariable final Integer id, @RequestBody @Validated ClienteDTO cliente)
+            throws ClienteNotFoundException {
         cliente.setId(id);
         return ResponseEntity.ok(clienteService.update(id, cliente));
     }
@@ -69,4 +70,3 @@ public class ClienteController {
         return ResponseEntity.noContent().build();
     }
 }
-

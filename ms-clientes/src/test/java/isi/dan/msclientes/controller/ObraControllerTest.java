@@ -2,6 +2,7 @@ package isi.dan.msclientes.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import isi.dan.msclientes.dto.CreateObraDTO;
 import isi.dan.msclientes.dto.ObraDTO;
 import isi.dan.msclientes.dto.UpdateObraDTO;
 import isi.dan.msclientes.exception.ObraNotFoundException;
@@ -71,7 +72,7 @@ public class ObraControllerTest {
 
     @Test
     void testCreate() throws Exception {
-        Mockito.when(obraService.save(Mockito.any(ObraDTO.class))).thenReturn(obra);
+        Mockito.when(obraService.save(Mockito.any(CreateObraDTO.class))).thenReturn(obra);
 
         mockMvc.perform(post("/api/obras")
                 .contentType(MediaType.APPLICATION_JSON)

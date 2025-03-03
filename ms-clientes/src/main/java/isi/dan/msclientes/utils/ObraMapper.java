@@ -1,19 +1,30 @@
 package isi.dan.msclientes.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.NoSuchElementException;
 
-import isi.dan.msclientes.dao.EstadoDeObraRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import isi.dan.msclientes.dao.ClienteRepository;
+import isi.dan.msclientes.dto.CreateObraDTO;
 import isi.dan.msclientes.dto.ObraDTO;
 import isi.dan.msclientes.dto.UpdateObraDTO;
+import isi.dan.msclientes.exception.ClienteNotFoundException;
+import isi.dan.msclientes.model.Cliente;
 import isi.dan.msclientes.model.EstadoDeObra;
 import isi.dan.msclientes.model.Obra;
+import isi.dan.msclientes.servicios.EstadoDeObraService;
 
+@Service
 public class ObraMapper {
 
     @Autowired
-    private static EstadoDeObraRepository estadoDeObraRepository;
+    private EstadoDeObraService estadoDeObraService;
 
-    public static Obra toEntity(ObraDTO dto) {
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    public Obra toEntity(ObraDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -26,7 +37,7 @@ public class ObraMapper {
         obra.setCliente(ClienteMapper.toEntity(dto.getCliente()));
         obra.setPresupuesto(dto.getPresupuesto());
 
-        EstadoDeObra estado = estadoDeObraRepository.findByEstado(dto.getEstado());
+        EstadoDeObra estado = estadoDeObraService.findByEstado(dto.getEstado());
         obra.setEstado(estado);
 
         return obra;
@@ -48,7 +59,7 @@ public class ObraMapper {
         return dto;
     }
 
-    public static Obra toEntity(UpdateObraDTO dto) {
+    public Obra toEntity(UpdateObraDTO dto) throws NoSuchElementException {
         if (dto == null) {
             return null;
         }
@@ -59,8 +70,38 @@ public class ObraMapper {
         obra.setLat(dto.getLat());
         obra.setLng(dto.getLng());
         obra.setPresupuesto(dto.getPresupuesto());
-        EstadoDeObra estado = estadoDeObraRepository.findByEstado(dto.getEstado());
+        EstadoDeObra estado = estadoDeObraService.findByEstado(dto.getEstado());
         obra.setEstado(estado);
+        return obra;
+    }
+
+    public Obra toEntity(CreateObraDTO dto) throws ClienteNotFoundException {
+        if (dto == null) {
+            return null;
+        }
+        Obra obra = new Obra();
+        obra.setDireccion(dto.getDireccion());
+        obra.setEsRemodelacion(dto.getEsRemodelacion());
+        obra.setLat(dto.getLat());
+        obra.setLng(dto.getLng());
+        obra.setPresupuesto(dto.getPresupuesto());
+        Cliente cliente = clienteRepository.findById(dto.getClienteId())
+                .orElseThrow(() -> new ClienteNotFoundException("Cliente " + dto.getClienteId() + " no encontrado"));
+        obra.setCliente(cliente);
+        return obra;
+    }
+
+    public Obra toEntity(CreateObraDTO dto, Cliente cliente) {
+        if (dto == null) {
+            return null;
+        }
+        Obra obra = new Obra();
+        obra.setDireccion(dto.getDireccion());
+        obra.setEsRemodelacion(dto.getEsRemodelacion());
+        obra.setLat(dto.getLat());
+        obra.setLng(dto.getLng());
+        obra.setPresupuesto(dto.getPresupuesto());
+        obra.setCliente(cliente);
         return obra;
     }
 

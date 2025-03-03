@@ -1,6 +1,7 @@
 package isi.dan.msclientes.servicios;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import isi.dan.msclientes.dao.ClienteRepository;
@@ -10,6 +11,7 @@ import isi.dan.msclientes.exception.ClienteNotFoundException;
 import isi.dan.msclientes.model.Cliente;
 import isi.dan.msclientes.utils.ClienteMapper;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,9 @@ public class ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @Value("${maximo.descubierto}")
+    private BigDecimal maximoDescubiertoDefault;
 
     public List<ClienteDTO> findAll() {
         return clienteRepository.findAll().stream().map(ClienteMapper::toDTO).collect(Collectors.toList());
@@ -34,7 +39,11 @@ public class ClienteService {
         cliente.setNombre(payload.getNombre());
         cliente.setCorreoElectronico(payload.getCorreoElectronico());
         cliente.setCuit(payload.getCuit());
-        cliente.setMaximoDescubierto(payload.getMaximoDescubierto());
+        if (payload.getMaximoDescubierto() == null) {
+            cliente.setMaximoDescubierto(maximoDescubiertoDefault);
+        } else {
+            cliente.setMaximoDescubierto(payload.getMaximoDescubierto());
+        }
         return ClienteMapper.toDTO(clienteRepository.save(cliente));
     }
 

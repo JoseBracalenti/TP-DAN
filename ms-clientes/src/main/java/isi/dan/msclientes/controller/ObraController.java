@@ -6,12 +6,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import isi.dan.msclientes.aop.LogExecutionTime;
+import isi.dan.msclientes.dto.CreateObraDTO;
 import isi.dan.msclientes.dto.ObraDTO;
 import isi.dan.msclientes.dto.UpdateObraDTO;
+import isi.dan.msclientes.exception.ClienteNotFoundException;
 import isi.dan.msclientes.exception.ObraNotFoundException;
 import isi.dan.msclientes.servicios.ObraService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/obras")
@@ -33,14 +36,33 @@ public class ObraController {
     }
 
     @PostMapping
-    public ObraDTO create(@RequestBody ObraDTO obra) {
-        return obraService.save(obra);
+    public ResponseEntity<ObraDTO> create(@RequestBody CreateObraDTO obra)
+            throws ClienteNotFoundException {
+        return ResponseEntity.ok(obraService.save(obra));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ObraDTO> update(@PathVariable Integer id, @RequestBody @Validated UpdateObraDTO obra)
-            throws ObraNotFoundException {
+            throws ObraNotFoundException, NoSuchElementException {
         return ResponseEntity.ok(obraService.update(obra));
+    }
+
+    @PutMapping("/{id}/habilitar")
+    public ResponseEntity<Void> habilitarObra(@PathVariable Integer id) throws ObraNotFoundException {
+        obraService.habilitarObra(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/pendiente")
+    public ResponseEntity<Void> pendienteObra(@PathVariable Integer id) throws ObraNotFoundException {
+        obraService.pendienteObra(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/finalizar")
+    public ResponseEntity<Void> finalizarObra(@PathVariable Integer id) throws ObraNotFoundException {
+        obraService.finalizarObra(id);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
