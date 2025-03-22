@@ -63,17 +63,17 @@ public class PedidoService {
     private BigDecimal calcularMontoTotal(Pedido pedido) {
         return pedido.getDetalle().stream().map(dp -> dp.getPrecioFinal().multiply(BigDecimal.valueOf(dp.getCantidad()))).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
+/* 
     private boolean verificarSaldoCliente(Integer clienteId, BigDecimal totalPedido) {
         try {
-            Boolean response = restTemplate.getForObject(
-                CLIENTES_URL + "/verificar-saldo/" + clienteId + "?monto=" + totalPedido, Boolean.class);
-            return Boolean.TRUE.equals(response);
+            BigDecimal saldoCliente = restTemplate.getForObject(
+                CLIENTES_URL + "/verificar-saldo/" + clienteId + "?monto=" + totalPedido, BigDecimal.class);
+            
         } catch (Exception e) {
             return false;
         }
     }
-
+*/
     private boolean actualizarStockProductos(List<DetallePedido> detalles) {
         boolean stockDisponible = true;
         for (DetallePedido dp : detalles) {
