@@ -2,7 +2,9 @@ package isi.dan.msclientes.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import isi.dan.msclientes.model.Cliente;
+import isi.dan.msclientes.dto.ClienteDTO;
+import isi.dan.msclientes.dto.CreateClienteDTO;
+import isi.dan.msclientes.exception.ClienteNotFoundException;
 import isi.dan.msclientes.servicios.ClienteService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -29,11 +30,11 @@ public class ClienteControllerTest {
     @MockBean
     private ClienteService clienteService;
 
-    private Cliente cliente;
+    private ClienteDTO cliente;
 
     @BeforeEach
     void setUp() {
-        cliente = new Cliente();
+        cliente = new ClienteDTO();
         cliente.setId(1);
         cliente.setNombre("Test Cliente");
         cliente.setCorreoElectronico("test@cliente.com");
@@ -52,7 +53,7 @@ public class ClienteControllerTest {
 
     @Test
     void testGetById() throws Exception {
-        Mockito.when(clienteService.findById(1)).thenReturn(Optional.of(cliente));
+        Mockito.when(clienteService.findById(1)).thenReturn(cliente);
 
         mockMvc.perform(get("/api/clientes/1"))
                 .andExpect(status().isOk())
@@ -62,7 +63,7 @@ public class ClienteControllerTest {
     }
     @Test
     void testGetById_NotFound() throws Exception {
-        Mockito.when(clienteService.findById(2)).thenReturn(Optional.empty());
+        Mockito.when(clienteService.findById(2)).thenThrow(ClienteNotFoundException.class);
 
         mockMvc.perform(get("/api/clientes/2"))
                 .andExpect(status().isNotFound());
@@ -70,7 +71,7 @@ public class ClienteControllerTest {
 
     @Test
     void testCreate() throws Exception {
-        Mockito.when(clienteService.save(Mockito.any(Cliente.class))).thenReturn(cliente);
+        Mockito.when(clienteService.save(Mockito.any(CreateClienteDTO.class))).thenReturn(cliente);
 
         mockMvc.perform(post("/api/clientes")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -81,8 +82,8 @@ public class ClienteControllerTest {
 
     @Test
     void testUpdate() throws Exception {
-        Mockito.when(clienteService.findById(1)).thenReturn(Optional.of(cliente));
-        Mockito.when(clienteService.update(Mockito.any(Cliente.class))).thenReturn(cliente);
+        Mockito.when(clienteService.findById(1)).thenReturn(cliente);
+        Mockito.when(clienteService.update(1, Mockito.any(ClienteDTO.class))).thenReturn(cliente);
 
         mockMvc.perform(put("/api/clientes/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -93,7 +94,7 @@ public class ClienteControllerTest {
 
     @Test
     void testDelete() throws Exception {
-        Mockito.when(clienteService.findById(1)).thenReturn(Optional.of(cliente));
+        Mockito.when(clienteService.findById(1)).thenReturn(cliente);
         Mockito.doNothing().when(clienteService).deleteById(1);
 
         mockMvc.perform(delete("/api/clientes/1"))

@@ -2,7 +2,10 @@ package isi.dan.msclientes.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import isi.dan.msclientes.model.Obra;
+import isi.dan.msclientes.dto.CreateObraDTO;
+import isi.dan.msclientes.dto.ObraDTO;
+import isi.dan.msclientes.dto.UpdateObraDTO;
+import isi.dan.msclientes.exception.ObraNotFoundException;
 import isi.dan.msclientes.servicios.ObraService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -30,11 +32,11 @@ public class ObraControllerTest {
     @MockBean
     private ObraService obraService;
 
-    private Obra obra;
+    private ObraDTO obra;
 
     @BeforeEach
     void setUp() {
-        obra = new Obra();
+        obra = new ObraDTO();
         obra.setId(1);
         obra.setDireccion("Direccion Test Obra");
         obra.setPresupuesto(BigDecimal.valueOf(100));
@@ -52,7 +54,7 @@ public class ObraControllerTest {
 
     @Test
     void testGetById() throws Exception {
-        Mockito.when(obraService.findById(1)).thenReturn(Optional.of(obra));
+        Mockito.when(obraService.findById(1)).thenReturn(obra);
 
         mockMvc.perform(get("/api/obras/1"))
                 .andExpect(status().isOk())
@@ -61,8 +63,16 @@ public class ObraControllerTest {
     }
 
     @Test
+    void testGetById_NotFound() throws Exception {
+        Mockito.when(obraService.findById(2)).thenThrow(ObraNotFoundException.class);
+
+        mockMvc.perform(get("/api/obras/2"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void testCreate() throws Exception {
-        Mockito.when(obraService.save(Mockito.any(Obra.class))).thenReturn(obra);
+        Mockito.when(obraService.save(Mockito.any(CreateObraDTO.class))).thenReturn(obra);
 
         mockMvc.perform(post("/api/obras")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -73,8 +83,8 @@ public class ObraControllerTest {
 
     @Test
     void testUpdate() throws Exception {
-        Mockito.when(obraService.findById(1)).thenReturn(Optional.of(obra));
-        Mockito.when(obraService.update(Mockito.any(Obra.class))).thenReturn(obra);
+        Mockito.when(obraService.findById(1)).thenReturn(obra);
+        Mockito.when(obraService.update(Mockito.any(UpdateObraDTO.class))).thenReturn(obra);
 
         mockMvc.perform(put("/api/obras/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -85,7 +95,7 @@ public class ObraControllerTest {
 
     @Test
     void testDelete() throws Exception {
-        Mockito.when(obraService.findById(1)).thenReturn(Optional.of(obra));
+        Mockito.when(obraService.findById(1)).thenReturn(obra);
         Mockito.doNothing().when(obraService).deleteById(1);
 
         mockMvc.perform(delete("/api/obras/1"))
