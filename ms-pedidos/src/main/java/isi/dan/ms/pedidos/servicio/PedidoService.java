@@ -16,7 +16,6 @@ import isi.dan.ms.pedidos.modelo.Pedido;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,14 +44,12 @@ public class PedidoService {
         BigDecimal total = calcularMontoTotal(pedido);
         pedido.setTotal(total);
 
-        // Verificar saldo del cliente
         boolean tieneSaldo = verificarSaldoCliente(pedido.getCliente().getId(), total);
         if (!tieneSaldo) {
             pedido.setEstado(EstadoPedido.RECHAZADO);
             return pedidoRepository.save(pedido);
         }
 
-        // Verificar stock de productos
         boolean stockDisponible = actualizarStockProductos(pedido.getDetalle());
         if (stockDisponible) {
             pedido.setEstado(EstadoPedido.EN_PREPARACION);
@@ -100,7 +97,6 @@ public class PedidoService {
         Pedido pedido = pedidoOpt.get();
         pedido.setEstado(nuevoEstado);
 
-        // Si se cancela el pedido, enviar mensaje a RabbitMQ para reponer stock
         if (nuevoEstado == EstadoPedido.CANCELADO) {
             enviarMensajeReponerStock(pedido);
         }
