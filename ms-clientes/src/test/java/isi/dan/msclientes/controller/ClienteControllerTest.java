@@ -32,6 +32,8 @@ public class ClienteControllerTest {
 
     private ClienteDTO cliente;
 
+    private CreateClienteDTO createCliente;
+
     @BeforeEach
     void setUp() {
         cliente = new ClienteDTO();
@@ -61,6 +63,7 @@ public class ClienteControllerTest {
                 .andExpect(jsonPath("$.nombre").value("Test Cliente"))
                 .andExpect(jsonPath("$.cuit").value("12998887776"));
     }
+
     @Test
     void testGetById_NotFound() throws Exception {
         Mockito.when(clienteService.findById(2)).thenThrow(ClienteNotFoundException.class);
@@ -71,11 +74,13 @@ public class ClienteControllerTest {
 
     @Test
     void testCreate() throws Exception {
+        // Create a mock of the ClienteService.save method. When it's called, it returns
+        // a DTO since it's expected
         Mockito.when(clienteService.save(Mockito.any(CreateClienteDTO.class))).thenReturn(cliente);
 
         mockMvc.perform(post("/api/clientes")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(cliente)))
+                .content(asJsonString(createCliente)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("Test Cliente"));
     }
@@ -83,13 +88,20 @@ public class ClienteControllerTest {
     @Test
     void testUpdate() throws Exception {
         Mockito.when(clienteService.findById(1)).thenReturn(cliente);
-        Mockito.when(clienteService.update(1, Mockito.any(ClienteDTO.class))).thenReturn(cliente);
+
+        ClienteDTO updatedCliente = new ClienteDTO();
+        updatedCliente.setId(1);
+        updatedCliente.setNombre("Updated Cliente");
+        updatedCliente.setCorreoElectronico("updated@cliente.com");
+        updatedCliente.setCuit("12998887776");
+
+        Mockito.when(clienteService.update(1, Mockito.any(ClienteDTO.class))).thenReturn(updatedCliente);
 
         mockMvc.perform(put("/api/clientes/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(cliente)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombre").value("Test Cliente"));
+                .content(asJsonString(updatedCliente)))
+                .andExpect(jsonPath("$.nombre").value("Updated Cliente"))
+                .andExpect(jsonPath("$.correoElectronico").value("updated@cliente.com"));
     }
 
     @Test
@@ -109,4 +121,3 @@ public class ClienteControllerTest {
         }
     }
 }
-

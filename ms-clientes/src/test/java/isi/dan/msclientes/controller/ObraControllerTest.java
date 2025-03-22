@@ -2,6 +2,7 @@ package isi.dan.msclientes.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import isi.dan.msclientes.dto.ClienteDTO;
 import isi.dan.msclientes.dto.CreateObraDTO;
 import isi.dan.msclientes.dto.ObraDTO;
 import isi.dan.msclientes.dto.UpdateObraDTO;
@@ -34,12 +35,41 @@ public class ObraControllerTest {
 
     private ObraDTO obra;
 
+    private CreateObraDTO createObra;
+
+    private UpdateObraDTO updateObra;
+
+    private ClienteDTO cliente;
+
     @BeforeEach
     void setUp() {
+        cliente = Mockito.mock(ClienteDTO.class);
+        cliente.setId(1);
+
         obra = new ObraDTO();
         obra.setId(1);
         obra.setDireccion("Direccion Test Obra");
-        obra.setPresupuesto(BigDecimal.valueOf(100));
+        obra.setEsRemodelacion(false);
+        obra.setLat(1);
+        obra.setLng(1);
+        obra.setEstado("HABILITADA");
+        obra.setCliente(cliente);
+        obra.setPresupuesto(BigDecimal.valueOf(100000));
+
+        createObra = new CreateObraDTO();
+        createObra.setDireccion("Direccion Test Obra");
+        createObra.setEsRemodelacion(false);
+        createObra.setLat(1);
+        createObra.setLng(1);
+        createObra.setClienteId(1);
+        createObra.setPresupuesto(BigDecimal.valueOf(100000));
+
+        updateObra = new UpdateObraDTO();
+        updateObra.setDireccion("Direccion Actualizada Obra");
+        updateObra.setEsRemodelacion(true);
+        updateObra.setLat(3);
+        updateObra.setLng(3);
+        updateObra.setPresupuesto(BigDecimal.valueOf(20000));
     }
 
     @Test
@@ -76,21 +106,34 @@ public class ObraControllerTest {
 
         mockMvc.perform(post("/api/obras")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(obra)))
+                .content(asJsonString(createObra)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.direccion").value("Direccion Test Obra"));
     }
 
     @Test
     void testUpdate() throws Exception {
-        Mockito.when(obraService.findById(1)).thenReturn(obra);
-        Mockito.when(obraService.update(Mockito.any(UpdateObraDTO.class))).thenReturn(obra);
+        ObraDTO updatedObra = new ObraDTO();
+        updatedObra.setId(1);
+        updatedObra.setDireccion("Direccion Actualizada Obra");
+        updatedObra.setEsRemodelacion(true);
+        updatedObra.setLat(3);
+        updatedObra.setLng(3);
+        updatedObra.setCliente(cliente);
+        updatedObra.setEstado("HABILITADA");
+        updatedObra.setPresupuesto(BigDecimal.valueOf(20000));
+
+        Mockito.when(obraService.update(Mockito.any(UpdateObraDTO.class))).thenReturn(updatedObra);
 
         mockMvc.perform(put("/api/obras/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(obra)))
+                .content(asJsonString(updateObra)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.direccion").value("Direccion Test Obra"));
+                .andExpect(jsonPath("$.direccion").value("Direccion Actualizada Obra"))
+                .andExpect(jsonPath("$.esRemodelacion").value(true))
+                .andExpect(jsonPath("$.lat").value(3))
+                .andExpect(jsonPath("$.lng").value(3))
+                .andExpect(jsonPath("$.presupuesto").value(20000));
     }
 
     @Test
@@ -102,6 +145,66 @@ public class ObraControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    void testPendiente() throws Exception {
+        Mockito.doNothing().when(obraService).pendienteObra(1);
+
+        mockMvc.perform(put("/api/obras/1/pendiente"))
+                .andExpect(status().isOk()); // Expect HTTP 200 OK
+
+        Mockito.verify(obraService, Mockito.times(1)).pendienteObra(1);
+    }
+
+    @Test
+    void testHabilitar() throws Exception {
+        Mockito.doNothing().when(obraService).habilitarObra(1);
+
+        mockMvc.perform(put("/api/obras/1/habilitar"))
+                .andExpect(status().isOk()); // Expect HTTP 200 OK
+
+        Mockito.verify(obraService, Mockito.times(1)).habilitarObra(1);
+    }
+
+    @Test
+    void testFinalizar() throws Exception {
+        Mockito.doNothing().when(obraService).finalizarObra(1);
+
+        mockMvc.perform(put("/api/obras/1/finalizar"))
+                .andExpect(status().isOk()); // Expect HTTP 200 OK
+
+        Mockito.verify(obraService, Mockito.times(1)).finalizarObra(1);
+    }
+
+    @Test
+    void testHabilitarError() throws Exception {
+        Mockito.doThrow(IllegalArgumentException.class).when(obraService).habilitarObra(1);
+
+        mockMvc.perform(put("/api/obras/1/habilitar"))
+                .andExpect(status().isBadRequest());
+
+        Mockito.verify(obraService, Mockito.times(1)).habilitarObra(1);
+    }
+
+    @Test
+    void testPendienteError() throws Exception {
+        Mockito.doThrow(IllegalArgumentException.class).when(obraService).pendienteObra(1);
+
+        mockMvc.perform(put("/api/obras/1/pendiente"))
+                .andExpect(status().isBadRequest());
+
+        Mockito.verify(obraService, Mockito.times(1)).pendienteObra(1);
+    }
+
+    @Test
+    void testFinalizarError() throws Exception {
+        Mockito.doThrow(IllegalArgumentException.class).when(obraService).finalizarObra(1);
+
+        mockMvc.perform(put("/api/obras/1/finalizar"))
+                .andExpect(status().isBadRequest());
+
+        Mockito.verify(obraService, Mockito.times(1)).finalizarObra(1);
+    }
+
     private static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
@@ -110,4 +213,3 @@ public class ObraControllerTest {
         }
     }
 }
-
