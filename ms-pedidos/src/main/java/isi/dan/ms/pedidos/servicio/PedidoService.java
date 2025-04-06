@@ -1,5 +1,12 @@
 package isi.dan.ms.pedidos.servicio;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -8,19 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import isi.dan.ms.pedidos.conf.RabbitMQConfig;
 import isi.dan.ms.pedidos.dao.PedidoRepository;
+import isi.dan.ms.pedidos.dto.ClienteDTO;
 import isi.dan.ms.pedidos.modelo.DetallePedido;
 import isi.dan.ms.pedidos.modelo.EstadoPedido;
 import isi.dan.ms.pedidos.modelo.Pedido;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 @Service
 public class PedidoService {
     
@@ -63,22 +62,24 @@ public class PedidoService {
     private BigDecimal calcularMontoTotal(Pedido pedido) {
         return pedido.getDetalle().stream().map(dp -> dp.getPrecioFinal().multiply(BigDecimal.valueOf(dp.getCantidad()))).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-/* 
+
     private boolean verificarSaldoCliente(Integer clienteId, BigDecimal totalPedido) {
         try {
-            BigDecimal saldoCliente = restTemplate.getForObject(
-                CLIENTES_URL + "/verificar-saldo/" + clienteId + "?monto=" + totalPedido, BigDecimal.class);
+            ClienteDTO cliente = restTemplate.getForObject(
+                CLIENTES_URL + "/api/cliente/" + clienteId, ClienteDTO.class);
+            if (cliente.getMaximoDescubierto().intValue() >= totalPedido.intValue()) return true;
+            else return false;
             
         } catch (Exception e) {
             return false;
         }
     }
-*/
+
     private boolean actualizarStockProductos(List<DetallePedido> detalles) {
         boolean stockDisponible = true;
         for (DetallePedido dp : detalles) {
             Boolean response = restTemplate.exchange(
-                PRODUCTOS_URL + "/actualizar-stock/" + dp.getProducto().getId() + "?cantidad=" + dp.getCantidad(),
+                PRODUCTOS_URL + dp.getProducto().getId()+ "/actualizar-stock/" ,
                 HttpMethod.PUT, null, Boolean.class).getBody();
             
             if (Boolean.FALSE.equals(response)) {
