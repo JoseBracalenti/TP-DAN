@@ -44,25 +44,7 @@ public class ObraController {
     @PutMapping("/{id}")
     public ResponseEntity<ObraDTO> update(@PathVariable Integer id, @RequestBody @Validated UpdateObraDTO obra)
             throws ObraNotFoundException, NoSuchElementException {
-        return ResponseEntity.ok(obraService.update(obra));
-    }
-
-    @PutMapping("/{id}/habilitar")
-    public ResponseEntity<Void> habilitarObra(@PathVariable Integer id) throws ObraNotFoundException {
-        obraService.habilitarObra(id);
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/{id}/pendiente")
-    public ResponseEntity<Void> pendienteObra(@PathVariable Integer id) throws ObraNotFoundException {
-        obraService.pendienteObra(id);
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/{id}/finalizar")
-    public ResponseEntity<Void> finalizarObra(@PathVariable Integer id) throws ObraNotFoundException {
-        obraService.finalizarObra(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(obraService.update(id, obra));
     }
 
     @DeleteMapping("/{id}")

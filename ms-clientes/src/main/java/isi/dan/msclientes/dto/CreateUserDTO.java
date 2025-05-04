@@ -20,4 +20,12 @@ public class CreateUserDTO {
 
     @NotNull
     private Integer clienteId;
+
+    @NotBlank
+    @Max(30)
+    private String nombre;
+
+    @NotBlank
+    @Pattern(regexp = "^d{1,8}$", message = "DNI inválido")
+    private String dni;
 }
