@@ -18,7 +18,7 @@ import isi.dan.msclientes.model.User;
 import isi.dan.msclientes.servicios.UserService;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired

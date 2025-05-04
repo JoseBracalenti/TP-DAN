@@ -9,7 +9,7 @@ import isi.dan.ms.pedidos.servicio.PedidoService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/pedidos")
+@RequestMapping("/pedidos")
 public class PedidoController {
     
     @Autowired

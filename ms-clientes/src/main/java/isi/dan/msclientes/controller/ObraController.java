@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/obras")
+@RequestMapping("/obras")
 public class ObraController {
 
     @Autowired

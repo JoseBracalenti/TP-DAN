@@ -3,9 +3,8 @@ package isi.dan.ms_productos.dto;
 import java.math.BigDecimal;
 import jakarta.validation.constraints.*;
 
-
 public class ProductoDTO {
-
+    private Long id;
     private String nombre;
     private String descripcion;
     @Min(value = 0)
@@ -13,11 +12,18 @@ public class ProductoDTO {
     @DecimalMin(value = "0.0", inclusive = false)
     private BigDecimal precio;
     @DecimalMin(value = "0.0")
-    private BigDecimal descuentoPromocional = BigDecimal.ZERO; 
+    private BigDecimal descuentoPromocional = BigDecimal.ZERO;
     private String nombreCategoria; // Sólo el nombre de la categoria
 
-
     // Getters y Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -67,7 +73,3 @@ public class ProductoDTO {
     }
 
 }
-
-
-
-
