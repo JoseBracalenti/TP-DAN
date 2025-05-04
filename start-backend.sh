@@ -7,12 +7,12 @@ docker-compose up -d
 cd ..
 cd ms-clientes
 docker-compose up -d 
-# cd ..
-# cd ms-productos
-# docker-compose up -d 
-# cd ..
-# cd ms-pedidos
-# docker-compose up -d 
+cd ..
+cd ms-productos
+docker-compose up -d 
+cd ..
+cd ms-pedidos
+docker-compose up -d 
 cd ..
 cd dan-gateway
 docker-compose up -d 
