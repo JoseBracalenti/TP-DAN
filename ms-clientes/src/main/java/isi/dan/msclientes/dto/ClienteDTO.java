@@ -1,6 +1,7 @@
 package isi.dan.msclientes.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -25,4 +26,7 @@ public class ClienteDTO {
 
     @Min(value = 10000, message = "El descubierto máximo debe ser al menos 10000")
     private BigDecimal maximoDescubierto;
+
+    @Null
+    private List<ObraDTO> obras;
 }

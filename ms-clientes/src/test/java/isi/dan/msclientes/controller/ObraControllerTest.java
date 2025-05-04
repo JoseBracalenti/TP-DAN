@@ -123,7 +123,7 @@ public class ObraControllerTest {
         updatedObra.setEstado("HABILITADA");
         updatedObra.setPresupuesto(BigDecimal.valueOf(20000));
 
-        Mockito.when(obraService.update(Mockito.any(UpdateObraDTO.class))).thenReturn(updatedObra);
+        Mockito.when(obraService.update(1, Mockito.any(UpdateObraDTO.class))).thenReturn(updatedObra);
 
         mockMvc.perform(put("/api/obras/1")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -9,6 +9,7 @@ import isi.dan.msclientes.dao.ObraRepository;
 import isi.dan.msclientes.dto.CreateObraDTO;
 import isi.dan.msclientes.dto.ObraDTO;
 import isi.dan.msclientes.dto.UpdateObraDTO;
+import isi.dan.msclientes.enums.EstadoDeObraEnum;
 import isi.dan.msclientes.exception.ClienteNotFoundException;
 import isi.dan.msclientes.exception.ObraNotFoundException;
 import isi.dan.msclientes.model.EstadoDeObra;
@@ -45,6 +46,10 @@ public class ObraService {
                 .orElseThrow(() -> new ObraNotFoundException("Obra " + id + " no encontrado")));
     }
 
+    public List<ObraDTO> findByClienteId(Integer id) {
+        return obraRepository.findByClienteId(id).stream().map(ObraMapper::toDTO).collect(Collectors.toList());
+    }
+
     public ObraDTO save(CreateObraDTO dto) throws ClienteNotFoundException {
 
         Obra obra = obraMapper.toEntity(dto);
@@ -67,10 +72,30 @@ public class ObraService {
         obraRepository.save(obra);
     }
 
-    public ObraDTO update(UpdateObraDTO obra) throws ObraNotFoundException, NoSuchElementException {
-        obraRepository.findById(obra.getId()).orElseThrow(
+    public ObraDTO update(Integer id, UpdateObraDTO obra) throws ObraNotFoundException, NoSuchElementException {
+        Obra obraActual = obraRepository.findById(id).orElseThrow(
                 () -> new ObraNotFoundException("Obra " + obra.getId() + " no encontrado para actualizar"));
-        return ObraMapper.toDTO(obraRepository.save(obraMapper.toEntity(obra)));
+        EstadoDeObraEnum estadoEnum = EstadoDeObraEnum.valueOf(obra.getEstado());
+
+        switch (estadoEnum) {
+            case HABILITADA:
+                habilitarObra(obraActual.getId());
+                break;
+            case PENDIENTE:
+                pendienteObra(obraActual.getId());
+                break;
+            case FINALIZADA:
+                finalizarObra(obraActual.getId());
+                break;
+        }
+
+        obraActual.setDireccion(obra.getDireccion());
+        obraActual.setEsRemodelacion(obra.getEsRemodelacion());
+        obraActual.setLat(obra.getLat());
+        obraActual.setLng(obra.getLng());
+        obraActual.setPresupuesto(obra.getPresupuesto());
+
+        return ObraMapper.toDTO(obraRepository.save(obraActual));
     }
 
     public void deleteById(Integer id) throws ObraNotFoundException {
@@ -85,12 +110,12 @@ public class ObraService {
 
         String estadoActual = obra.getEstado().getEstado();
 
-        if (estadoActual.equals("FINALIZADA")) {
-            throw new IllegalArgumentException("La obra ya está finalizada.");
+        if (estadoActual.equals("HABILITADA")) {
+            return;
         }
 
-        if (estadoActual.equals("HABILITADA")) {
-            throw new IllegalArgumentException("La obra ya está habilitada.");
+        if (estadoActual.equals("FINALIZADA")) {
+            throw new IllegalArgumentException("La obra ya está finalizada.");
         }
 
         List<Obra> obrasActivas = obraRepository.findByClienteIdAndEstado_Estado(obra.getCliente().getId(),
@@ -108,15 +133,15 @@ public class ObraService {
     public void pendienteObra(Integer id) throws ObraNotFoundException {
         Obra obra = obraRepository.findById(id)
                 .orElseThrow(() -> new ObraNotFoundException("Obra " + id + " no encontrado"));
-        
+
         String estadoActual = obra.getEstado().getEstado();
+
+        if (estadoActual.equals("PENDIENTE")) {
+            return;
+        }
 
         if (estadoActual.equals("FINALIZADA")) {
             throw new IllegalArgumentException("La obra ya está finalizada.");
-        }
-
-        if (estadoActual.equals("PENDIENTE")) {
-            throw new IllegalArgumentException("La obra ya está pendiente.");
         }
 
         asignarEstado(obra, "PENDIENTE");
@@ -129,14 +154,15 @@ public class ObraService {
                 .orElseThrow(() -> new ObraNotFoundException("Obra " + id + " no encontrado"));
 
         if (obra.getEstado().getEstado().equals("FINALIZADA")) {
-            throw new IllegalArgumentException("La obra ya está finalizada.");
+            return;
         }
 
         asignarEstado(obra, "FINALIZADA");
 
         obraRepository.save(obra);
 
-        List<Obra> obrasPendientes = obraRepository.findByClienteIdAndEstado_Estado(obra.getCliente().getId(), "PENDIENTE");
+        List<Obra> obrasPendientes = obraRepository.findByClienteIdAndEstado_Estado(obra.getCliente().getId(),
+                "PENDIENTE");
 
         Logger logger = Logger.getLogger(ObraService.class.getName());
         logger.log(Level.INFO, "Obras pendientes: {0}", obrasPendientes);

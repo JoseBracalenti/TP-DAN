@@ -70,8 +70,7 @@ public class ObraMapper {
         obra.setLat(dto.getLat());
         obra.setLng(dto.getLng());
         obra.setPresupuesto(dto.getPresupuesto());
-        EstadoDeObra estado = estadoDeObraService.findByEstado(dto.getEstado());
-        obra.setEstado(estado);
+        // no mapea estado porque usa endpoints especificos.
         return obra;
     }
 
