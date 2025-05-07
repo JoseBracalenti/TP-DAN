@@ -65,7 +65,7 @@ public class ProductoService {
         return mapper.productoToDTO(producto);
     }
 
-    public ProductoDTO updateProductoStock(Long id, StockUpdateDTO stockUpdateDTO) throws ProductoNotFoundException{
+    public UpdateProductoDTO updateProductoStock(Long id, StockUpdateDTO stockUpdateDTO) throws ProductoNotFoundException{
         Producto producto = productoRepository.findById(id).orElseThrow(() -> new ProductoNotFoundException(id));
         producto.setStockActual(producto.getStockActual()+ stockUpdateDTO.getCantidad());
         producto.setPrecio(stockUpdateDTO.getPrecio());
@@ -73,7 +73,7 @@ public class ProductoService {
     // ahora código para mensaje
     rabbitTemplate.convertAndSend(RabbitMQConfig.STOCK_UPDATE_QUEUE, stockUpdateDTO);
     log.info("Mensaje enviado a RabbitMQ: {}", stockUpdateDTO);
-        return mapper.productoToDTO(producto);
+        return mapper.productoToUpdate(producto);
     }
 
 

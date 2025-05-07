@@ -41,7 +41,7 @@ public class CategoriaControllerTest {
     @BeforeEach
     void setUp() {
         categoriaDTO = new CategoriaDTO();
-        categoriaDTO.setNombre("Electrónica");
+        categoriaDTO.setNombre("categoriaDTOTEST");
     }
 
     @Test
@@ -53,22 +53,22 @@ public class CategoriaControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(categoriaDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombre").value("Electrónica"));
+                .andExpect(jsonPath("$.nombre").value("categoriaDTOTEST"));
     }
 
     @Test
     void testUpdateCategoria() throws Exception {
         UpdateCategoriaDTO updateDTO = new UpdateCategoriaDTO();
-        updateDTO.setNombre("Electrodomésticos");
+        updateDTO.setNombre("updateDTOTEST");
 
-        Mockito.when(categoriaService.updateCategoria(Mockito.any(UpdateCategoriaDTO.class), Mockito.eq("Electrónica")))
+        Mockito.when(categoriaService.updateCategoria(Mockito.any(UpdateCategoriaDTO.class), Mockito.eq("categoriaDTOTEST")))
                 .thenReturn(updateDTO);
 
-        mockMvc.perform(put("/categorias/Electrónica")
+        mockMvc.perform(put("/categorias/categoriaDTOTEST")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(updateDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombre").value("Electrodomésticos"));
+                .andExpect(jsonPath("$.nombre").value("updateDTOTEST"));
     }
 
     @Test
@@ -78,17 +78,17 @@ public class CategoriaControllerTest {
 
         mockMvc.perform(get("/categorias"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nombre").value("Electrónica"));
+                .andExpect(jsonPath("$[0].nombre").value("categoriaDTOTEST"));
     }
 
     @Test
     void testGetCategoriaByName() throws Exception {
-        Mockito.when(categoriaService.getCategoriaByName("Electrónica"))
+        Mockito.when(categoriaService.getCategoriaByName("categoriaDTOTEST"))
                 .thenReturn(categoriaDTO);
 
-        mockMvc.perform(get("/categorias/Electrónica"))
+        mockMvc.perform(get("/categorias/categoriaDTOTEST"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombre").value("Electrónica"));
+                .andExpect(jsonPath("$.nombre").value("categoriaDTOTEST"));
     }
 
     @Test
@@ -102,9 +102,9 @@ public class CategoriaControllerTest {
 
     @Test
     void testDeleteCategoria() throws Exception {
-        Mockito.doNothing().when(categoriaService).deleteCategoria("Electrónica");
+        Mockito.doNothing().when(categoriaService).deleteCategoria("categoriaDTOTEST");
 
-        mockMvc.perform(delete("/categorias/Electrónica"))
+        mockMvc.perform(delete("/categorias/categoriaDTOTEST"))
                 .andExpect(status().isNoContent());
     }
 

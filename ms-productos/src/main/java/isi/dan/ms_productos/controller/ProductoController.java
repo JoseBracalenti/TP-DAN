@@ -71,7 +71,7 @@ public class ProductoController {
     // Actualizar stock, punto c.
     @PutMapping("{id}/actualizar_stock")
     @LogExecutionTime
-    public ResponseEntity<ProductoDTO> actualizarStock(@PathVariable Long id,@RequestBody @Validated StockUpdateDTO stockUpdateDTO) throws ProductoNotFoundException  {
+    public ResponseEntity<UpdateProductoDTO> actualizarStock(@PathVariable Long id,@RequestBody @Validated StockUpdateDTO stockUpdateDTO) throws ProductoNotFoundException  {
         return ResponseEntity.ok(productoService.updateProductoStock(id,stockUpdateDTO));
     }
 
