@@ -39,6 +39,8 @@ public class UserService {
         User user = new User();
         user.setCorreoElectronico(dto.getEmail());
         user.setPassword(dto.getPassword());
+        user.setNombre(dto.getNombre());
+        user.setDni(dto.getDni());
         Cliente cliente = clienteRepository.findById(dto.getClienteId())
                 .orElseThrow(() -> new ClienteNotFoundException("Cliente no encontrado"));
         user.setCliente(cliente);

@@ -13,7 +13,7 @@ import isi.dan.msclientes.model.EstadoDeObra;
 import isi.dan.msclientes.servicios.EstadoDeObraService;
 
 @RestController
-@RequestMapping("/api/estado-de-obra")
+@RequestMapping("/estado-de-obra")
 public class EstadoDeObraController {
 
     @Autowired

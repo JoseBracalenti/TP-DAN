@@ -32,7 +32,8 @@ public class Mapper{
     }
 
     public ProductoDTO productoToDTO(Producto producto){
-        ProductoDTO respuestaDTO = new ProductoDTO();      
+        ProductoDTO respuestaDTO = new ProductoDTO();     
+        respuestaDTO.setId(producto.getId()); 
         respuestaDTO.setNombre(producto.getNombre());
         respuestaDTO.setDescripcion(producto.getDescripcion());
         respuestaDTO.setStockMinimo(producto.getStockMinimo());

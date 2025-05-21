@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
-@RequestMapping("/api/categorias")
+@RequestMapping("/categorias")
 public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;

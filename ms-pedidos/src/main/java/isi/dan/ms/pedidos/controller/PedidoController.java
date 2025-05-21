@@ -20,7 +20,7 @@ import isi.dan.ms.pedidos.servicio.PedidoService;
 import isi.dan.ms.pedidos.utils.Mapper;
 
 @RestController
-@RequestMapping("/api/pedidos")
+@RequestMapping("/pedidos")
 public class PedidoController {
     
     @Autowired

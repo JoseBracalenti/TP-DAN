@@ -19,6 +19,9 @@ import java.util.stream.Collectors;
 public class ClienteService {
 
     @Autowired
+    private ObraService obraService;
+
+    @Autowired
     private ClienteRepository clienteRepository;
 
     @Value("${maximo.descubierto}")
@@ -29,8 +32,10 @@ public class ClienteService {
     }
 
     public ClienteDTO findById(Integer id) throws ClienteNotFoundException {
-        return ClienteMapper.toDTO(clienteRepository.findById(id)
+        ClienteDTO dto = ClienteMapper.toDTO(clienteRepository.findById(id)
                 .orElseThrow(() -> new ClienteNotFoundException("Cliente " + id + " no encontrado")));
+        dto.setObras(obraService.findByClienteId(id));
+        return dto;
     }
 
     public ClienteDTO save(CreateClienteDTO payload) {
