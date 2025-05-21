@@ -148,6 +148,22 @@ public class ProductoControllerTest {
                 .andExpect(jsonPath("$.descuentoPromocional").value(10.00));
     }
 
+    @Test
+    void testVerificarStockVenta() throws Exception {
+    VerificacionStockVentaDTO dto = new VerificacionStockVentaDTO();
+    dto.setId(1L);
+    dto.setCantidadRequerida(3);
+
+    Mockito.when(productoService.verificarStockParaVenta(Mockito.anyList())).thenReturn(true);
+
+    mockMvc.perform(post("/productos/verificar_stock")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(asJsonString(Collections.singletonList(dto))))
+            .andExpect(status().isOk())
+            .andExpect(content().string("true"));
+    }
+
+
     // Utilidad
     private static String asJsonString(final Object obj) {
         try {
@@ -156,4 +172,6 @@ public class ProductoControllerTest {
             throw new RuntimeException(e);
         }
     }
+
+
 }
