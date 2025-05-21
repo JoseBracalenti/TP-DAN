@@ -35,6 +35,7 @@ public class PedidoService {
 
     private final String CLIENTES_URL = "http://ms-clientes-svc:8080/api/clientes";
     private final String PRODUCTOS_URL = "http://ms-productos-svc:8080/api/productos";
+    
 
 
 
@@ -66,7 +67,7 @@ public class PedidoService {
     private boolean verificarSaldoCliente(Integer clienteId, BigDecimal totalPedido) {
         try {
             ClienteDTO cliente = restTemplate.getForObject(
-                CLIENTES_URL + "/api/cliente/" + clienteId, ClienteDTO.class);
+                CLIENTES_URL + clienteId, ClienteDTO.class);
             if (cliente.getMaximoDescubierto().intValue() >= totalPedido.intValue()) return true;
             else return false;
             
@@ -79,9 +80,9 @@ public class PedidoService {
         boolean stockDisponible = true;
         for (DetallePedido dp : detalles) {
             Boolean response = restTemplate.exchange(
-                PRODUCTOS_URL + dp.getProducto().getId()+ "/actualizar-stock/" ,
+                PRODUCTOS_URL + dp.getProducto().getId()+ "/actualizar-stock/",
                 HttpMethod.PUT, null, Boolean.class).getBody();
-            
+                
             if (Boolean.FALSE.equals(response)) {
                 stockDisponible = false;
             }
