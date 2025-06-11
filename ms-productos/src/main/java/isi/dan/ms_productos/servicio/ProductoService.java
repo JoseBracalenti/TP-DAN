@@ -13,7 +13,6 @@ import isi.dan.ms_productos.dto.*;
 import isi.dan.ms_productos.exception.CategoriaNotFoundException;
 import isi.dan.ms_productos.exception.ProductoNotFoundException;
 import isi.dan.ms_productos.modelo.Producto;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -74,6 +73,18 @@ public class ProductoService {
     rabbitTemplate.convertAndSend(RabbitMQConfig.STOCK_UPDATE_QUEUE, stockUpdateDTO);
     log.info("Mensaje enviado a RabbitMQ: {}", stockUpdateDTO);
         return mapper.productoToUpdate(producto);
+    }
+
+    public boolean verificarStockParaVenta(List<VerificacionStockVentaDTO> lista) throws ProductoNotFoundException {
+    boolean retorno = true;
+    for (VerificacionStockVentaDTO dto : lista) {
+        Producto producto = productoRepository.findById(dto.getId())
+                .orElseThrow(() -> new ProductoNotFoundException(dto.getId()));
+        if (producto.getStockActual() - dto.getCantidadRequerida() < 0) {
+            retorno = false; // No hay suficiente stock
+        }
+    }
+    return retorno; // Todos los productos tienen stock suficiente
     }
 
 

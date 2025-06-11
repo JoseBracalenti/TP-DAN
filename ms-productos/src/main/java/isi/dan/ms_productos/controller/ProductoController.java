@@ -15,6 +15,7 @@ import isi.dan.ms_productos.dto.*;
 import isi.dan.ms_productos.servicio.EchoClientFeign;
 import isi.dan.ms_productos.servicio.ProductoService;
 
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -80,6 +81,13 @@ public class ProductoController {
     @LogExecutionTime
     public ResponseEntity<ProductoDTO> actualizarDescuento(@PathVariable @Validated Long id, @PathVariable @Validated BigDecimal desc_promo ) throws ProductoNotFoundException{
         return ResponseEntity.ok(productoService.updateDescuento(id,desc_promo)) ;
+    }
+
+    @PostMapping("/verificar_stock")
+    @LogExecutionTime
+    public ResponseEntity<Boolean> verificarStockVenta(@RequestBody List<VerificacionStockVentaDTO> lista) throws ProductoNotFoundException {
+    boolean resultado = productoService.verificarStockParaVenta(lista);
+    return ResponseEntity.ok(resultado);
     }
 
 
