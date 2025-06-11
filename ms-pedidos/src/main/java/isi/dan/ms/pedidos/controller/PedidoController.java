@@ -19,14 +19,14 @@ import isi.dan.ms.pedidos.modelo.Pedido;
 import isi.dan.ms.pedidos.servicio.PedidoService;
 import isi.dan.ms.pedidos.utils.Mapper;
 
+
 @RestController
 @RequestMapping("/pedidos")
 public class PedidoController {
     
     @Autowired
     private PedidoService pedidoService;
-    @Autowired
-    private Mapper mapper;
+    private Mapper mapper = new Mapper();
     @PostMapping
     public ResponseEntity<PedidoDTO> createPedido(@RequestBody PedidoDTO pedidoDTO) {
         Pedido savedPedido = pedidoService.savePedido(mapper.DTOtoPedido(pedidoDTO));

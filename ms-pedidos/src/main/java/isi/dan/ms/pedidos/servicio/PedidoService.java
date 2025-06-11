@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import isi.dan.ms.pedidos.dao.PedidoRepository;
 import isi.dan.ms.pedidos.dto.ClienteDTO;
+import isi.dan.ms.pedidos.dto.StockUpdateDTO;
 import isi.dan.ms.pedidos.modelo.DetallePedido;
 import isi.dan.ms.pedidos.modelo.EstadoPedido;
 import isi.dan.ms.pedidos.modelo.Pedido;
@@ -33,8 +34,8 @@ public class PedidoService {
     private RestTemplate restTemplate;
     Logger log = LoggerFactory.getLogger(PedidoService.class);
 
-    private final String CLIENTES_URL = "http://ms-clientes-svc:8080/api/clientes";
-    private final String PRODUCTOS_URL = "http://ms-productos-svc:8080/api/productos";
+    private final String CLIENTES_URL = "http://ms-clientes-svc-1:8080/clientes";
+    private final String PRODUCTOS_URL = "http://ms-productos-svc-1:8080/productos";
     
 
 
@@ -67,11 +68,15 @@ public class PedidoService {
     private boolean verificarSaldoCliente(Integer clienteId, BigDecimal totalPedido) {
         try {
             ClienteDTO cliente = restTemplate.getForObject(
-                CLIENTES_URL + clienteId, ClienteDTO.class);
-            if (cliente.getMaximoDescubierto().intValue() >= totalPedido.intValue()) return true;
+                CLIENTES_URL + "/"+ clienteId, ClienteDTO.class);
+                System.out.println(cliente.getMaximoDescubierto().intValue());
+                System.out.println(totalPedido.intValue());
+                if (cliente.getMaximoDescubierto().compareTo(totalPedido) >= 0) return true;
+
             else return false;
             
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -79,11 +84,11 @@ public class PedidoService {
     private boolean actualizarStockProductos(List<DetallePedido> detalles) {
         boolean stockDisponible = true;
         for (DetallePedido dp : detalles) {
-            Boolean response = restTemplate.exchange(
-                PRODUCTOS_URL + dp.getProducto().getId()+ "/actualizar-stock/",
-                HttpMethod.PUT, null, Boolean.class).getBody();
+            StockUpdateDTO response = restTemplate.exchange(
+                PRODUCTOS_URL + "/"+ dp.getProducto().getId()+ "/actualizar-stock",
+                HttpMethod.PUT, null, StockUpdateDTO.class).getBody();
                 
-            if (Boolean.FALSE.equals(response)) {
+            if (response.getCantidad() >= 0) {
                 stockDisponible = false;
             }
         }
