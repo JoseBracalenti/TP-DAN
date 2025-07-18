@@ -29,7 +29,7 @@ public class Mapper {
     }
     public PedidoDTO pedidoToDTO(Pedido pedido){
         PedidoDTO dto = new PedidoDTO();
-        dto.setCliente(pedido.getCliente());
+        dto.setCliente(clienteToDTO(pedido.getCliente()));
         dto.setDetalle(pedido.getDetalle());
         dto.setEstado(pedido.getEstado());
         dto.setFecha(pedido.getFecha());
@@ -42,7 +42,7 @@ public class Mapper {
     }
     public Pedido DTOtoPedido(PedidoDTO dto){
         Pedido pedido = new Pedido();
-        pedido.setCliente(dto.getCliente());
+        pedido.setCliente(DTOtoCliente(dto.getCliente()));
         pedido.setDetalle(dto.getDetalle());
         pedido.setEstado(dto.getEstado());
         pedido.setFecha(dto.getFecha());
