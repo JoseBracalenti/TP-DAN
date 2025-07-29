@@ -10,5 +10,5 @@ public class Cliente {
     private String nombre;
     private String correoElectronico;
     private String cuit;
-
+    private Obra obra;
 }

@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run PedidoController Tests",
+			"type": "shell",
+			"command": "./mvnw.cmd",
+			"args": [
+				"test",
+				"-Dtest=PedidoControllerTest"
+			],
+			"group": "test",
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		}
+	]
+}

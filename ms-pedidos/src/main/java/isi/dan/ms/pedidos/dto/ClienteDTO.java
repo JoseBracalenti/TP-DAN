@@ -8,6 +8,13 @@ public class ClienteDTO {
     private String correoElectronico;
     private String cuit;
     private BigDecimal maximoDescubierto;
+    private ObraDTO obra;
+    public ObraDTO getObra() {
+        return obra;
+    }
+    public void setObra(ObraDTO obra) {
+        this.obra = obra;
+    }
     public Integer getId() {
         return id;
     }

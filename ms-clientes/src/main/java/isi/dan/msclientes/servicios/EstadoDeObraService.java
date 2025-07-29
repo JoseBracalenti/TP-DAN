@@ -1,5 +1,6 @@
 package isi.dan.msclientes.servicios;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,10 @@ public class EstadoDeObraService {
     public EstadoDeObra findByEstado(String estado) throws NoSuchElementException{
         return estadoDeObraRepository.findByEstado(estado)
                 .orElseThrow(() -> new NoSuchElementException("Estado " + estado + " no encontrado"));
+    }
+
+    public List<EstadoDeObra> findAll() {
+        return estadoDeObraRepository.findAll();
     }
 
 }

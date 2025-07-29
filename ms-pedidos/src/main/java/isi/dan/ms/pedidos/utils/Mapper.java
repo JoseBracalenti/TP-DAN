@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import isi.dan.ms.pedidos.dao.PedidoRepository;
 import isi.dan.ms.pedidos.dto.ClienteDTO;
+import isi.dan.ms.pedidos.dto.ObraDTO;
 import isi.dan.ms.pedidos.dto.PedidoDTO;
 import isi.dan.ms.pedidos.modelo.Cliente;
+import isi.dan.ms.pedidos.modelo.Obra;
 import isi.dan.ms.pedidos.modelo.Pedido;
 
 public class Mapper {
@@ -17,6 +19,20 @@ public class Mapper {
         dto.setCuit(cliente.getCuit());
         dto.setId(cliente.getId());
         dto.setNombre(cliente.getNombre());
+        dto.setObra(cliente.getObra() != null ? obraToObraDTO(cliente.getObra()) : null);
+        return dto; 
+    }
+
+    // Add this helper method for obra conversion
+    public ObraDTO obraToObraDTO(Obra obra) {
+        ObraDTO dto = new ObraDTO();
+        dto.setId(obra.getId());
+        dto.setDireccion(obra.getDireccion());
+        dto.setEsRemodelacion(obra.getEsRemodelacion());
+        dto.setLat(obra.getLat());
+        dto.setLng(obra.getLng());
+        dto.setCliente(obra.getCliente() != null ? clienteToDTO(obra.getCliente()) : null);
+        dto.setPresupuesto(obra.getPresupuesto());
         return dto;
     }
     public Cliente DTOtoCliente(ClienteDTO dto){
@@ -25,7 +41,21 @@ public class Mapper {
         cliente.setCuit(dto.getCuit());
         cliente.setId(dto.getId());
         cliente.setNombre(dto.getNombre());
+        
         return cliente;
+    }
+
+    // Add this helper method for ObraDTO to Obra conversion
+    public Obra obraDTOtoObra(ObraDTO obraDTO) {
+        Obra obra = new Obra();
+        obra.setId(obraDTO.getId());
+        obra.setDireccion(obraDTO.getDireccion());
+        obra.setEsRemodelacion(obraDTO.getEsRemodelacion());
+        obra.setLat(obraDTO.getLat());
+        obra.setLng(obraDTO.getLng());
+        obra.setCliente(obraDTO.getCliente() != null ? DTOtoCliente(obraDTO.getCliente()) : null);
+        obra.setPresupuesto(obraDTO.getPresupuesto());
+        return obra;
     }
     public PedidoDTO pedidoToDTO(Pedido pedido){
         PedidoDTO dto = new PedidoDTO();
