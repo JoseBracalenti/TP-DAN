@@ -15,7 +15,7 @@ public class PedidoDTO {
     private String usuario;
     private String observaciones;
     private EstadoPedido Estado;
-    private Cliente cliente;
+    private ClienteDTO clienteDTO;
     private BigDecimal total;
     private List<DetallePedido> detalle;
     
@@ -55,11 +55,11 @@ public class PedidoDTO {
     public void setEstado(EstadoPedido estado) {
         Estado = estado;
     }
-    public Cliente getCliente() {
-        return cliente;
+    public ClienteDTO getCliente() {
+        return clienteDTO;
     }
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+    public void setCliente(ClienteDTO cliente) {
+        this.clienteDTO = cliente;
     }
     public BigDecimal getTotal() {
         return total;
