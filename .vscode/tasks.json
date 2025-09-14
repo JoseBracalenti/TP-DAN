@@ -9,11 +9,12 @@
 				"test",
 				"-Dtest=PedidoControllerTest"
 			],
+			"options": {
+				"cwd": "${workspaceFolder}/ms-pedidos"
+			},
 			"group": "test",
 			"isBackground": false,
-			"problemMatcher": [
-				"$tsc"
-			]
+			"problemMatcher": []
 		}
 	]
 }
