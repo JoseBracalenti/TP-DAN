@@ -25,7 +25,10 @@ public class ObraController {
 
     @GetMapping
     @LogExecutionTime
-    public List<ObraDTO> getAll() {
+    public List<ObraDTO> getAll(@RequestParam(required = false) Integer clienteId) {
+        if (clienteId != null) {
+            return obraService.findByClienteId(clienteId);
+        }
         return obraService.findAll();
     }
 

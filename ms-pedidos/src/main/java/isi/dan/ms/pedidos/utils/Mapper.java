@@ -1,18 +1,25 @@
 package isi.dan.ms.pedidos.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import isi.dan.ms.pedidos.dao.PedidoRepository;
 import isi.dan.ms.pedidos.dto.ClienteDTO;
+import isi.dan.ms.pedidos.dto.CrearPedidoDTO;
 import isi.dan.ms.pedidos.dto.ObraDTO;
 import isi.dan.ms.pedidos.dto.PedidoDTO;
 import isi.dan.ms.pedidos.modelo.Cliente;
+import isi.dan.ms.pedidos.modelo.DetallePedido;
+import isi.dan.ms.pedidos.modelo.EstadoPedido;
 import isi.dan.ms.pedidos.modelo.Obra;
 import isi.dan.ms.pedidos.modelo.Pedido;
+import isi.dan.ms.pedidos.modelo.Producto;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
 public class Mapper {
-    @Autowired
-    private PedidoRepository pedidoDAO;
     public ClienteDTO clienteToDTO(Cliente cliente){
         ClienteDTO dto = new ClienteDTO();
         dto.setCorreoElectronico(cliente.getCorreoElectronico());
@@ -41,6 +48,7 @@ public class Mapper {
         cliente.setCuit(dto.getCuit());
         cliente.setId(dto.getId());
         cliente.setNombre(dto.getNombre());
+        cliente.setObra(dto.getObra() != null ? obraDTOtoObra(dto.getObra()) : null);
         
         return cliente;
     }
@@ -81,6 +89,43 @@ public class Mapper {
         pedido.setObservaciones(dto.getObservaciones());
         pedido.setTotal(dto.getTotal());
         pedido.setUsuario(dto.getUsuario());
+        return pedido;
+    }
+    
+    public Pedido crearPedidoDTOtoPedido(CrearPedidoDTO dto, String usuario) {
+        Pedido pedido = new Pedido();
+        
+        // Crear cliente básico con solo el ID - sin obra para evitar relaciones circulares
+        Cliente cliente = new Cliente();
+        cliente.setId(dto.getClienteId());
+        cliente.setNombre("Cliente " + dto.getClienteId()); // Nombre temporal
+        pedido.setCliente(cliente);
+        
+        pedido.setObservaciones(dto.getObservaciones());
+        pedido.setUsuario(usuario);
+        pedido.setFecha(Instant.now());
+        pedido.setEstado(EstadoPedido.ACEPTADO);
+        
+        // Convertir productos a detalles
+        List<DetallePedido> detalles = dto.getProductos().stream()
+            .map(productoPedido -> {
+                DetallePedido detalle = new DetallePedido();
+                
+                Producto producto = new Producto();
+                producto.setId(productoPedido.getId());
+                producto.setNombre("Producto " + productoPedido.getId()); // Nombre temporal
+                detalle.setProducto(producto);
+                
+                detalle.setCantidad(productoPedido.getCantidad());
+                detalle.setDescuento(BigDecimal.ZERO);
+                // Los precios se establecerán en el servicio
+                
+                return detalle;
+            })
+            .collect(Collectors.toList());
+            
+        pedido.setDetalle(detalles);
+        
         return pedido;
     }
 }

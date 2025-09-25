@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import isi.dan.ms.pedidos.dto.CrearPedidoDTO;
 import isi.dan.ms.pedidos.dto.PedidoDTO;
 import isi.dan.ms.pedidos.modelo.EstadoPedido;
 import isi.dan.ms.pedidos.modelo.Pedido;
@@ -26,11 +27,50 @@ public class PedidoController {
     
     @Autowired
     private PedidoService pedidoService;
-    private Mapper mapper = new Mapper();
+    
+    @Autowired
+    private Mapper mapper;
     @PostMapping
     public ResponseEntity<PedidoDTO> createPedido(@RequestBody PedidoDTO pedidoDTO) {
         Pedido savedPedido = pedidoService.savePedido(mapper.DTOtoPedido(pedidoDTO));
         return ResponseEntity.ok(mapper.pedidoToDTO(savedPedido));
+    }
+
+    @PostMapping("/crear")
+    public ResponseEntity<PedidoDTO> crearPedido(@RequestBody CrearPedidoDTO crearPedidoDTO, @RequestParam(defaultValue = "sistema") String usuario) {
+        try {
+            System.out.println("=== INICIO CREAR PEDIDO ===");
+            System.out.println("DTO recibido: " + crearPedidoDTO);
+            System.out.println("Usuario: " + usuario);
+            
+            Pedido pedido = mapper.crearPedidoDTOtoPedido(crearPedidoDTO, usuario);
+            System.out.println("Pedido mapeado: " + pedido);
+            
+            Pedido savedPedido = pedidoService.savePedido(pedido);
+            System.out.println("Pedido guardado: " + savedPedido);
+            
+            PedidoDTO result = mapper.pedidoToDTO(savedPedido);
+            System.out.println("DTO resultado: " + result);
+            System.out.println("=== FIN CREAR PEDIDO ===");
+            
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("=== ERROR EN CREAR PEDIDO ===");
+            System.err.println("Error message: " + e.getMessage());
+            System.err.println("Error class: " + e.getClass().getName());
+            if (e.getCause() != null) {
+                System.err.println("Cause: " + e.getCause().getMessage());
+                System.err.println("Cause class: " + e.getCause().getClass().getName());
+            }
+            e.printStackTrace();
+            System.err.println("=== FIN ERROR ===");
+            return ResponseEntity.status(500).build();
+        }
+    }
+    
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Microservicio de pedidos funcionando correctamente - " + java.time.Instant.now());
     }
 
     @GetMapping

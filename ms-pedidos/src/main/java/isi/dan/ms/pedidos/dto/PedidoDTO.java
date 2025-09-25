@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
-import isi.dan.ms.pedidos.modelo.Cliente;
 import isi.dan.ms.pedidos.modelo.DetallePedido;
 import isi.dan.ms.pedidos.modelo.EstadoPedido;
 
@@ -14,8 +13,8 @@ public class PedidoDTO {
     private Integer numeroPedido;
     private String usuario;
     private String observaciones;
-    private EstadoPedido Estado;
-    private ClienteDTO clienteDTO;
+    private EstadoPedido estado;
+    private ClienteDTO cliente;
     private BigDecimal total;
     private List<DetallePedido> detalle;
     
@@ -50,16 +49,16 @@ public class PedidoDTO {
         this.observaciones = observaciones;
     }
     public EstadoPedido getEstado() {
-        return Estado;
+        return estado;
     }
     public void setEstado(EstadoPedido estado) {
-        Estado = estado;
+        this.estado = estado;
     }
     public ClienteDTO getCliente() {
-        return clienteDTO;
+        return cliente;
     }
     public void setCliente(ClienteDTO cliente) {
-        this.clienteDTO = cliente;
+        this.cliente = cliente;
     }
     public BigDecimal getTotal() {
         return total;

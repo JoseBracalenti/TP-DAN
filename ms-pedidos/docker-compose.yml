@@ -48,8 +48,9 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_EUREKA_DEFAULT_ZONE: http://ms-eureka-svc:8761/eureka/
       SPRING_INSTANCIA: ms-pedidos-svc
+      EUREKA_ENABLED: true
     ports:
-      - "6280:8080"
+      - "6280:8082"
     depends_on:
       - mongo-dan
     networks:
